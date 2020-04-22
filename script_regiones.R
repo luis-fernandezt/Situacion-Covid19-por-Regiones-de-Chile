@@ -201,16 +201,6 @@ gg3 <- ggplot() +
                                           reverse = T)) +
   xlim(-8300000, -7200000)
 
-## opcional - guardamos como imagen en formato carta de forma individual ####
-ggsave(plot = gg1, filename = './Map1_casos_por_region_qt.png', 
-       units = 'mm', width = 216, height = 279, dpi = 1200)
-
-ggsave(plot = gg2, filename = './Map2_tasa contagios_qt.png', 
-       units = 'mm', width = 216, height = 279, dpi = 1200)
-
-ggsave(plot = gg3, filename = './Map3_tasa_fall_qt.png', 
-       units = 'mm', width = 216, height = 279, dpi = 1200)
-
 ## grafico combinado ####
 ggx <- ggarrange(gg1, gg2, gg3 + rremove("x.text"), 
                  #labels = c("A", "B", "C"),
@@ -222,8 +212,7 @@ ggx1 <- annotate_figure(ggx,
                         bottom = text_grob("Autor: L. Fernández, Fuente: Minsal.cl, Mapa vectorial: bcn.cl", 
                                            color = "grey",
                                            hjust = 1.03, x = 1, face = "italic", size = 10))
-
-## guardamosgrafico combinado imagen ####
+# guardamos grafico
 ggsave(plot = ggx1, filename = './Map1_regiones_combinado.png', 
        units = 'mm', width = 279, height = 216, dpi = 300)
 
