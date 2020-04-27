@@ -10,7 +10,7 @@ library(ggplot2)
 require(ggspatial)
 library(ggrepel)
 library(ggpubr)
-library(viridis) 
+library(viridis)  
 
 ## cargamos el mapa ####
 # descomprimir con 7-zip en la carpeta shp/ antes de ejecutar
@@ -21,7 +21,7 @@ shp <- shp[shp@data$Region != "Zona sin demarcar" ,  ]
 regiones <- aggregate(shp, 'Region') # agregamos por regiones
 regiones <- st_as_sf(regiones) # lento*
 
-## cargamos casos en Excel ####
+## cargamos casos en Excel editado manualmente con fuentes Minsal-MinCiencia e INE ####
 casos <- read_excel('./tbl/Reporte_Regional.xlsx')
 
 ## cambiamos los nombres de las regiones para que coincidan con los nombres del archivo *.xlsx  ####
@@ -207,13 +207,13 @@ ggx <- ggarrange(gg1, gg2, gg3 + rremove("x.text"),
                  ncol = 3, nrow = 1)
 
 ggx1 <- annotate_figure(ggx,
-                        top = text_grob("Situación covid19 por regiones\n21 de abril de 2020", 
+                        top = text_grob("Situación covid19 por regiones\n27 de abril de 2020", 
                                         color = "black", face = "bold", size = 14),
                         bottom = text_grob("Autor: L. Fernández, Fuente: Minsal.cl, Mapa vectorial: bcn.cl", 
                                            color = "grey",
                                            hjust = 1.03, x = 1, face = "italic", size = 10))
 # guardamos grafico
-ggsave(plot = ggx1, filename = './Map1_regiones_combinado.png', 
+ggsave(plot = ggx1, filename = './Mapa_con_la_situación_por_regiones.png', 
        units = 'mm', width = 279, height = 216, dpi = 300)
 
 #Fin de línea
