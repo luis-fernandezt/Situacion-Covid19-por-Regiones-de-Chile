@@ -14,3 +14,7 @@ En este repositorio puede encontrar varios scrips en lenguaje R, para visualizar
 ![graficor10](https://raw.githubusercontent.com/luis-fernandezt/Situacion-Covid19-por-Regiones-de-Chile/master/Gr%C3%A1ficos/Casos%20r14.png)
 
 Las imágenes fueron mejoradas utilizando Adobe Illustrator*
+Fuente: Elaboración propia.
+
+#### **Versión de Rstudio:**
+"R version 3.6.3 (2020-02-29)"
