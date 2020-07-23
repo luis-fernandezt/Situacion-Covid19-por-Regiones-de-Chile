@@ -123,7 +123,7 @@ gg1 <- ggplot() +
   labs(x = NULL, 
        y = NULL, 
        title = "", 
-       subtitle = "Casos confirmados covid19\n27 de abril de 2020", 
+       subtitle = "Casos confirmados covid19", 
        caption = "") +
   
   annotation_north_arrow(location = "tr", 
@@ -165,7 +165,7 @@ gg2 <- ggplot() +
   labs(x = NULL, 
        y = NULL, 
        title = "", 
-       subtitle = "Tasa de contagiados cada 100 mil habitantes\n27 de abril de 2020", 
+       subtitle = "Tasa de contagiados cada 100 mil habitantes", 
        caption = "") +
   
   scale_fill_viridis(option = "magma",
@@ -194,7 +194,7 @@ ggx <- ggarrange(gg1, gg2 + rremove("x.text"),
                   ncol = 1, nrow = 2)
 
 ggx1 <- annotate_figure(ggx,
-                         top = text_grob("Región de Los Ríos", 
+                         top = text_grob("Región de Los Ríos \n 20-07-2020", 
                                          color = "black", face = "bold", size = 14),
                          bottom = text_grob("Autor: L. Fernández, Datos: MinCiencia", color = "grey",
                                             hjust = 1.05, x = 1, face = "italic", size = 8))

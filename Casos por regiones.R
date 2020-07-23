@@ -20,7 +20,7 @@ shp <- shp[shp@data$Region != "Zona sin demarcar" ,  ]
 regiones <- aggregate(shp, 'Region') # agregamos por regiones
 regiones <- st_as_sf(regiones) # lento
 
-# cambiamos los nombres de las regiones para que coincidan con los nombres del archivo csv
+# cambiamos los nombres de las regiones para que coincidan con los nombres del archivo .xlsx
 regiones$Region <- c("Arica y Parinacota",   "Tarapaca",   "Antofagasta",   "Magallanes",
                       "Aysen",   "Atacama",   "Coquimbo",   "Valparaiso",   "Metropolitana",
                       "Los Lagos",   "Los Rios",   "Araucania",   "Biobio",   "Nuble",
@@ -30,14 +30,15 @@ regiones$Region <- c("Arica y Parinacota",   "Tarapaca",   "Antofagasta",   "Mag
 # hay que actualizar cada día
 # cargamos casos en Excel editado manualmente con fuentes Minsal-MinCiencia e INE
 # https://www.ine.cl/estadisticas/sociales/demografia-y-vitales/proyecciones-de-poblacion
-# https://github.com/MinCiencia/Datos-COVID19/blob/master/output/producto4/2020-05-01-CasosConfirmados-totalRegional.csv
+# https://github.com/MinCiencia/Datos-COVID19/blob/master/output/producto4/2020-07-23-CasosConfirmados-totalRegional.csv
+
 
 casos <- read_excel('./tbl/Reporte_Regional.xlsx')
 
 # paso 3 - fortificamos la data por cada calumna del excel que necesitemos ####
 mps_casos <- casos %>% 
   group_by(Region) %>%
-  dplyr::summarise(Casos_totales_acumulados = max(Casos_totales_acumulados)) %>%  
+  dplyr::summarise(Casos_activos_confirmados = max(Casos_activos_confirmados)) %>%  
   ungroup()
 
 mps_tasa100mil <- casos %>%
@@ -63,7 +64,7 @@ sft_tasa_fallec <- st_as_sf(regiones) %>%
 # paso 4 - quantiles #### 
 # quantiles para Casos_totales
 labels_casos <- c()
-quantiles_casos <- quantile(sft$Casos_totales_acumulados, probs = c(0,0.2, 0.4, 0.6, 0.8, 0.9, 1),
+quantiles_casos <- quantile(sft$Casos_activos_confirmados, probs = c(0,0.2, 0.4, 0.6, 0.8, 0.9, 1),
                             type=6, names = FALSE)
 
 labels_casos <- c()
@@ -74,7 +75,7 @@ for(idx in 1:length(quantiles_casos)){
 
 labels_casos <- labels_casos[1:length(labels_casos)-1]
 
-sft$Casos_totales_qt <- cut(sft$Casos_totales_acumulados, # guardamos los quantiles  
+sft$Casos_activos_confirmados_qt <- cut(sft$Casos_activos_confirmados, # guardamos los quantiles  
                             breaks = quantiles_casos, 
                             labels = labels_casos, 
                             include.lowest = T)
@@ -114,10 +115,10 @@ sft_tasa_fallec$tasa_fallec_100mil_qt <- cut(sft_tasa_fallec$tasa_fallec_100mil,
                                              include.lowest = T)
 
 # paso 5 - ploteamos ####
-# ploteamos Casos_totales_qt por region
+# ploteamos Casos_activos_confirmados_qt por region
 gg1 <- ggplot() +
   geom_sf(data = sft, color= 'white', size=0.2,
-          aes(fill = Casos_totales_qt, colour = Casos_totales_qt)) +
+          aes(fill = Casos_activos_confirmados_qt, colour = Casos_activos_confirmados_qt)) +
   
   coord_sf() +
   theme_void() +
@@ -137,10 +138,10 @@ gg1 <- ggplot() +
   labs(x = NULL, 
        y = NULL, 
        title = "",
-       subtitle ="Casos confirmados") +  
+       subtitle ="Casos Activos") +  
   
   scale_fill_viridis(option = "magma",
-                     name = "Casos covid19",
+                     name = "Casos\nActivos\ncovid19",
                      alpha = 1, #0.8 para publicar
                      begin = 0,
                      end = 0.9,
@@ -212,12 +213,12 @@ ggx <- ggarrange(gg1, gg2, gg3 + rremove("x.text"),
                  ncol = 3, nrow = 1)
 
 ggx1 <- annotate_figure(ggx,
-                        top = text_grob("Situación covid19 por regiones\n01 de mayo de 2020", 
+                        top = text_grob("Situación covid19 por regiones\n23 de julio de 2020", 
                                         color = "black", face = "bold", size = 14),
                         bottom = text_grob("Autor: L. Fernández - Datos: MinCiencia - Mapa vectorial: bcn.cl", 
                                            color = "grey",
                                            hjust = 1.03, x = 1, face = "italic", size = 10))
 
 # guardamos como imagen (opcional)
-ggsave(plot = ggx1, filename = './Gráficos/Casos por regiones.png', 
+ggsave(plot = ggx1, filename = './Gráficos/Casos por regiones 2.png', 
        units = 'mm', width = 279, height = 216, dpi = 300)

@@ -116,7 +116,7 @@ gg1 <-
   labs(x = NULL, 
        y = NULL, 
        title = "", 
-       subtitle = "Casos confirmados covid19\n27 de abril de 2020", 
+       subtitle = "Casos confirmados covid19", 
        caption = "") +
   
   scale_fill_viridis(option = "magma",
@@ -155,7 +155,7 @@ gg2 <-
   labs(x = NULL, 
        y = NULL, 
        title = "", 
-       subtitle = "Tasa de contagiados cada 100 mil habitantes\n27 de abril de 2020", 
+       subtitle = "Tasa de contagiados cada 100 mil habitantes", 
        caption = "") +
   
   annotation_north_arrow(location = "tr", 
@@ -189,7 +189,7 @@ ggx <- ggarrange(gg1, gg2 + rremove("x.text"),
                  ncol = 2, nrow = 1)
 
 ggx1 <- annotate_figure(ggx,
-                        top = text_grob("Región de Los Lagos", 
+                        top = text_grob("Región de Los Lagos \n 20-07-2020", 
                                         color = "black", face = "bold", size = 14),
                         bottom = text_grob("Autor: L. Fernández, Datos: MinCiencia", color = "grey",
                                            hjust = 1.05, x = 1, face = "italic", size = 10))
