@@ -199,3 +199,90 @@ ggx1
 # opcional, guardamos como imagen
 ggsave(plot = ggx1, filename = './Map_R10_datos_MinCiencia.png', #guardamos como imagen
        units = 'mm', width = 279, height = 216, dpi = 300)
+
+
+
+
+
+
+
+
+
+### Casos activos en Los Lagos #### 
+
+shp <- shapefile('./shp/comunas.shp')
+shp@data$Region <- iconv(shp@data$Region, from = 'UTF-8', to = 'latin1')
+shp@data$Provincia <- iconv(shp@data$Provincia, from = 'UTF-8', to = 'latin1')
+shp@data$Comuna <- iconv(shp@data$Comuna, from = 'UTF-8', to = 'latin1')
+
+r10 <- shp[shp@data$Region=="Región de Los Lagos" ,  ]
+
+comunas_sf <- aggregate(r10, 'Comuna') #agregamos region por comuna
+comunas_sf <- st_as_sf(comunas_sf)
+
+comunas_sf$Comuna <- c("San Pablo", "Puqueldon", "Fresia", "Llanquihue", "Osorno", "Purranque", "Puyehue", "Cochamo", "Ancud",
+                       "Quellon", "Queilen", "Chonchi", "Puerto Montt", "Rio Negro", "Castro", "Dalcahue", "Quemchi", 
+                       "San Juan de la Costa", "Calbuco", "Chaiten", "Los Muermos", "Maullin", "Quinchao", "Curaco de Velez",
+                       "Puerto Octay", "Frutillar", "Puerto Varas", "Hualaihue", "Palena", "Futaleufu")
+
+
+producto19 <- read_csv("https://raw.githubusercontent.com/MinCiencia/Datos-COVID19/master/output/producto19/CasosActivosPorComuna_std.csv")
+producto19 <- as.data.frame(producto19)
+names(producto19) <- c("Region", "Codigo_region", "Comuna", "Codigo_comuna", "Poblacion", "Fecha", "Casos_activos")
+
+# filtramos por última fecha para tener el dato más actualizado
+tbl <- producto19 %>%  filter(Codigo_region == 10)
+tbl <- tbl %>% filter(Fecha == max(Fecha)) 
+max(tbl$Fecha)
+
+# paso 3. fortificamos la data ####
+mps_act <- tbl %>% 
+  group_by(Comuna) %>% #agrupamos Casos_activos
+  dplyr::summarise(Casos_activos = max(Casos_activos)) %>%  
+  ungroup()
+
+# unimos la columna "municipio" del excel con el shp agregado por "Comuna"
+sft_casos <- st_as_sf(comunas_sf) %>% 
+  inner_join(., y = mps_act, by = c('Comuna' = 'Comuna'))
+sft_casos <- sft_casos %>% filter(Casos_activos > 0)
+
+#ubicamos el centroide
+sft_casos <- sft_casos %>% mutate(centroid = map(geometry, st_centroid), 
+                                        coords = map(centroid, st_coordinates), 
+                                        coords_x = map_dbl(coords, 1), 
+                                        coords_y = map_dbl(coords, 2))
+
+#ploteamos ploteamos los datos con los Casos_activos
+
+gg3 <- ggplot() +
+  geom_sf(data = comunas_sf, color= 'white', size=0.5, fill = 'grey') +
+  geom_sf(data = sft_casos, color= 'white', size=0.5,
+          aes(fill = Casos_activos, colour = Casos_activos)) +
+  
+  scale_fill_viridis_c("Casos", option = "viridis", alpha = 1, begin = 0, end = 1, direction = 1) +
+  scale_color_viridis_c(alpha = 0.8, begin = 0.2, end = 0.8, direction = 1, guide = FALSE) +
+  
+  geom_label_repel(data=sft_casos, size= 2, color= 'white', fontface = 'bold', fill = 'red',
+                   aes(coords_x, coords_y, label= Casos_activos)) + 
+  
+  geom_text_repel(data=sft_casos, size= 2, color= 'black', fontface = 'bold',  segment.color = NA,
+                   aes(coords_x, coords_y, label= Comuna)) +
+  
+  coord_sf() +
+  theme_void() +
+  theme(plot.title = element_text(hjust = 0, size = 14, face = "bold"),
+        legend.position = c(0.05,0.01), #"none", 
+        legend.direction = "horizontal",
+        legend.key.size = unit(0.2, "cm"), #alto leyenda
+        legend.key.width = unit(1, 'line'), #ancho leyenda 
+        legend.background = element_rect(fill = alpha('white', 0),colour = alpha('white', 0.0))) + 
+  
+  labs(x = NULL, 
+       y = NULL, 
+       title = "Los Lagos, Comunas con Casos Activos de covid-19", 
+       subtitle = "24-07-2020", 
+       caption = "Fuente: github.com/MinCiencia/Datos-COVID19/tree/master/output/producto19") +
+
+  ylim(-5500000, -4900000)
+
+gg3
