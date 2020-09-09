@@ -1,4 +1,3 @@
-
 # Script guardado y codificado en Latin1 para evitar pérdida de caracteres
 # cargamos librerias
 require(raster)
@@ -22,9 +21,9 @@ regiones <- st_as_sf(regiones) # lento
 
 # cambiamos los nombres de las regiones para que coincidan con los nombres del archivo .xlsx
 regiones$Region <- c("Arica y Parinacota",   "Tarapaca",   "Antofagasta",   "Magallanes",
-                      "Aysen",   "Atacama",   "Coquimbo",   "Valparaiso",   "Metropolitana",
-                      "Los Lagos",   "Los Rios",   "Araucania",   "Biobio",   "Nuble",
-                      "Maule",   "O'Higgins")
+                     "Aysen",   "Atacama",   "Coquimbo",   "Valparaiso",   "Metropolitana",
+                     "Los Lagos",   "Los Rios",   "Araucania",   "Biobio",   "Nuble",
+                     "Maule",   "O'Higgins")
 
 # Paso 2 - cargamos casos desde excel ####
 # hay que actualizar cada día
@@ -76,13 +75,13 @@ for(idx in 1:length(quantiles_casos)){
 labels_casos <- labels_casos[1:length(labels_casos)-1]
 
 sft$Casos_activos_confirmados_qt <- cut(sft$Casos_activos_confirmados, # guardamos los quantiles  
-                            breaks = quantiles_casos, 
-                            labels = labels_casos, 
-                            include.lowest = T)
+                                        breaks = quantiles_casos, 
+                                        labels = labels_casos, 
+                                        include.lowest = T)
 
 # quantiles tasa sft_tasa100mil
 labels_tc <- c()
-quantiles_tc <- quantile(sft_tasa100mil$tasa_cont_100mil, probs = c(0,0.2, 0.4, 0.6, 0.8, 0.9, 1), type=6, names = FALSE) # ajuste manual
+quantiles_tc <- quantile(sft_tasa100mil$tasa_cont_100mil, probs = c(0,0.2, 0.4, 0.5, 0.6, 0.8, 0.9, 1), type=6, names = FALSE) # ajuste manual
 
 labels_tc <- c()
 for(idx in 1:length(quantiles_tc)){
@@ -99,7 +98,7 @@ sft_tasa100mil$tasa_cont_100mil_qt <- cut(sft_tasa100mil$tasa_cont_100mil, # gua
 
 # quantiles sft_tasa_fallec
 labels_fall <- c()
-quantiles_fall <- quantile(sft_tasa_fallec$tasa_fallec_100mil, probs = c(0, 0.4, 0.6, 0.8, 0.9, 1), type=6, names = FALSE) # ajuste manual
+quantiles_fall <- quantile(sft_tasa_fallec$tasa_fallec_100mil, probs = c(0, 0.4, 0.5, 0.6, 0.8, 0.9, 1), type=6, names = FALSE) # ajuste manual
 
 labels_fall <- c()
 for(idx in 1:length(quantiles_fall)){
@@ -169,7 +168,7 @@ gg2 <- ggplot() +
        subtitle ="Tasa de contagiados") + 
   
   scale_fill_viridis(option = "cividis",
-                     name = "Tasa de\ncontagiados\ncada 100 mil\nhabitantes",
+                     name = "Incidenia de\ncasos activos\ncada 100 mil\nhabitantes",
                      alpha = 1, #0.8 para publicar
                      begin = 0,
                      end = 0.9,
@@ -213,12 +212,12 @@ ggx <- ggarrange(gg1, gg2, gg3 + rremove("x.text"),
                  ncol = 3, nrow = 1)
 
 ggx1 <- annotate_figure(ggx,
-                        top = text_grob("Situación covid19 por regiones\n23 de julio de 2020", 
+                        top = text_grob("Situación covid19 por regiones\n09 de septiembre de 2020", 
                                         color = "black", face = "bold", size = 14),
-                        bottom = text_grob("Autor: L. Fernández - Datos: MinCiencia - Mapa vectorial: bcn.cl", 
+                        bottom = text_grob("Fuente: Minsal, MinCiencia", 
                                            color = "grey",
                                            hjust = 1.03, x = 1, face = "italic", size = 10))
 
 # guardamos como imagen (opcional)
-ggsave(plot = ggx1, filename = './Gráficos/Casos por regiones 2.png', 
+ggsave(plot = ggx1, filename = './Gráficos/Casos por regiones.png', 
        units = 'mm', width = 279, height = 216, dpi = 300)

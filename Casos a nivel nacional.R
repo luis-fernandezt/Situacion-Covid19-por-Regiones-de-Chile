@@ -33,10 +33,10 @@ ggplot(TotalesNacionales_std, aes(x=Fecha, y=Total, group=Dato, color=Dato)) +
         scale_y_continuous(trans = 'log10') +
   #nombres de títulos, ejes y leyenda
   theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
-        ggtitle("Evolución de Casos Covid-19 en Chile \n 23-07-2020") +
+        ggtitle("Evolución de Casos Covid-19 en Chile\n09 de septiembre de 2020") +
         ylab("Cantidad de casos") +
         xlab("Fecha") +
-        labs(caption = "Autor: L.Fernández - Data: Minsal.cl, github.com/MinCiencia") +
+        labs(caption = "Fuente: Minsal.cl, github.com/MinCiencia") +
   scale_colour_viridis_d(name = "Casos", option = 'A', begin = 0,end = 0.8, direction = -1,alpha=0.8)
 
 gg1
