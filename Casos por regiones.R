@@ -3,15 +3,14 @@
 require(raster)
 require(tidyverse)
 require(sf)
-library(readxl)
+library(viridis)  
+library(ggplot2)
 library(ggplot2)
 require(ggspatial)
 library(ggrepel)
 library(ggpubr)
-library(viridis)  
 
-# paso 1. Cargamos el mapa ####
-# descomprimir con 7-zip en la carpeta shp/ antes de ejecutar
+# paso 1. Cargamos el polígono con las regiones####
 shp <- shapefile('./shp/Regional.shp')
 shp@data$Region <- iconv(shp@data$Region, from = 'UTF-8', to = 'latin1') 
 shp <- shp[shp@data$Region != "Zona sin demarcar" ,  ]
@@ -19,51 +18,77 @@ shp <- shp[shp@data$Region != "Zona sin demarcar" ,  ]
 regiones <- aggregate(shp, 'Region') # agregamos por regiones
 regiones <- st_as_sf(regiones) # lento
 
-# cambiamos los nombres de las regiones para que coincidan con los nombres del archivo .xlsx
-regiones$Region <- c("Arica y Parinacota",   "Tarapaca",   "Antofagasta",   "Magallanes",
-                     "Aysen",   "Atacama",   "Coquimbo",   "Valparaiso",   "Metropolitana",
-                     "Los Lagos",   "Los Rios",   "Araucania",   "Biobio",   "Nuble",
+# cambiamos los nombres de las regiones para que coincidan con los nombres del archivo .csv
+regiones$Region <- c("Arica y Parinacota",   "Tarapacá",   "Antofagasta",   "Magallanes",
+                     "Aysén",   "Atacama",   "Coquimbo",   "Valparaíso",   "Metropolitana",
+                     "Los Lagos",   "Los Ríos",   "Araucanía",   "Biobío",   "Ñuble",
                      "Maule",   "O'Higgins")
 
-# Paso 2 - cargamos casos desde excel ####
-# hay que actualizar cada día
-# cargamos casos en Excel editado manualmente con fuentes Minsal-MinCiencia e INE
-# https://www.ine.cl/estadisticas/sociales/demografia-y-vitales/proyecciones-de-poblacion
-# https://github.com/MinCiencia/Datos-COVID19/blob/master/output/producto4/2020-07-23-CasosConfirmados-totalRegional.csv
+# Paso 2 - cargamos reporte diario desde Minciencia
+producto4 <- read_csv("https://raw.githubusercontent.com/MinCiencia/Datos-COVID19/master/output/producto4/2020-09-10-CasosConfirmados-totalRegional.csv")
+producto4 <- as.data.frame(producto4)
 
+names(producto4) <- c("Region", "Casos_totales_acumulados", "Casos_nuevos_totales", "Casos_nuevos_con_sintomas",
+                      "Casos_nuevos_sin_sintomas*", "Casos_nuevos_sin_notificar", "Casos_activos_confirmados",
+                      "Fallecidos_totales", "Casos_confirmados_recuperados", "Casos_probables_acumulados", 
+                      "Casos_activos_probables")
 
-casos <- read_excel('./tbl/Reporte_Regional.xlsx')
+# agregamos poblacion regional según datos del INE
+producto4$Poblacion <- c("252110", "382773", "691854", "314709", "836096", "1960170", "8125072", "991063",
+                         "1131939", "511551", "1663696", "1014343", "405835", "891440", "107297", "178362",
+                         NA, "19458310")
+names(producto4)
+
+#Procesamos la DF
+Region <- producto4[1:16, c("Region")]
+Fallecidos_totales <- producto4[1:16, c("Fallecidos_totales")]
+Fallecidos_totales <- as.numeric(Fallecidos_totales) 
+
+Casos_activos_confirmados <- producto4[1:16, c("Casos_activos_confirmados")]
+Casos_activos_confirmados <- as.numeric(Casos_activos_confirmados) 
+Poblacion <- producto4[1:16, c("Poblacion")]
+Poblacion <- as.numeric(Poblacion)  
+
+tasa_fallec_100mil <- (Fallecidos_totales/Poblacion)*100000
+tasa_activ_100mil <- (Casos_activos_confirmados/Poblacion)*100000
+
+casos <- cbind(Region, Fallecidos_totales, Casos_activos_confirmados, Poblacion, tasa_fallec_100mil, tasa_activ_100mil)
+casos <- as.data.frame(casos)
 
 # paso 3 - fortificamos la data por cada calumna del excel que necesitemos ####
 mps_casos <- casos %>% 
   group_by(Region) %>%
-  dplyr::summarise(Casos_activos_confirmados = max(Casos_activos_confirmados)) %>%  
+  dplyr::summarise(Casos_activos_confirmados) %>%  
   ungroup()
 
 mps_tasa100mil <- casos %>%
   group_by(Region) %>%
-  dplyr::summarise(tasa_cont_100mil = max(tasa_cont_100mil)) %>%  
+  dplyr::summarise(tasa_activ_100mil) %>%  
   ungroup()
 
 mps_tasa_fallec <- casos %>% 
   group_by(Region) %>%
-  dplyr::summarise(tasa_fallec_100mil = max(tasa_fallec_100mil)) %>%  
+  dplyr::summarise(tasa_fallec_100mil) %>%  
   ungroup()
 
 # Ahora unimos la columna "Region" del excel con el shp agregado"REGION" 
 sft <- st_as_sf(regiones) %>%
   inner_join(., y = mps_casos, by = c('Region' = 'Region'))
+sft$Casos_activos_confirmados <- as.numeric(as.character(sft$Casos_activos_confirmados))
 
 sft_tasa100mil <- st_as_sf(regiones) %>% 
   inner_join(., y = mps_tasa100mil, by = c('Region' = 'Region'))
+sft_tasa100mil$tasa_activ_100mil <- as.numeric(as.character(sft_tasa100mil$tasa_activ_100mil))
+
 
 sft_tasa_fallec <- st_as_sf(regiones) %>%
   inner_join(., y = mps_tasa_fallec, by = c('Region' = 'Region'))
+sft_tasa_fallec$tasa_fallec_100mil <- as.numeric(as.character(sft_tasa_fallec$tasa_fallec_100mil))
 
 # paso 4 - quantiles #### 
 # quantiles para Casos_totales
 labels_casos <- c()
-quantiles_casos <- quantile(sft$Casos_activos_confirmados, probs = c(0,0.2, 0.4, 0.6, 0.8, 0.9, 1),
+quantiles_casos <- quantile(sft$Casos_activos_confirmados, probs = c(0, 0.2, 0.4, 0.5, 0.6, 0.8, 0.9, 1),
                             type=6, names = FALSE)
 
 labels_casos <- c()
@@ -81,7 +106,7 @@ sft$Casos_activos_confirmados_qt <- cut(sft$Casos_activos_confirmados, # guardam
 
 # quantiles tasa sft_tasa100mil
 labels_tc <- c()
-quantiles_tc <- quantile(sft_tasa100mil$tasa_cont_100mil, probs = c(0,0.2, 0.4, 0.5, 0.6, 0.8, 0.9, 1), type=6, names = FALSE) # ajuste manual
+quantiles_tc <- quantile(sft_tasa100mil$tasa_activ_100mil, probs = c(0,0.2, 0.4, 0.5, 0.6, 0.8, 0.9, 1), type=6, names = FALSE) # ajuste manual
 
 labels_tc <- c()
 for(idx in 1:length(quantiles_tc)){
@@ -91,10 +116,10 @@ for(idx in 1:length(quantiles_tc)){
 
 labels_tc <- labels_tc[1:length(labels_tc)-1]
 
-sft_tasa100mil$tasa_cont_100mil_qt <- cut(sft_tasa100mil$tasa_cont_100mil, # guardamos  
-                                          breaks = quantiles_tc, 
-                                          labels = labels_tc, 
-                                          include.lowest = T)
+sft_tasa100mil$tasa_activ_100mil_qt <- cut(sft_tasa100mil$tasa_activ_100mil, # guardamos  
+                                           breaks = quantiles_tc, 
+                                           labels = labels_tc, 
+                                           include.lowest = T)
 
 # quantiles sft_tasa_fallec
 labels_fall <- c()
@@ -113,8 +138,31 @@ sft_tasa_fallec$tasa_fallec_100mil_qt <- cut(sft_tasa_fallec$tasa_fallec_100mil,
                                              labels = labels_fall, 
                                              include.lowest = T)
 
+# limpiamos la BD
+rm(Region)
+rm(Fallecidos_totales)
+rm(Casos_activos_confirmados)
+rm(Poblacion)
+rm(tasa_fallec_100mil)
+rm(tasa_activ_100mil)
+rm(producto4)
+rm(shp)
+rm(mps_casos)
+rm(mps_tasa100mil)
+rm(mps_tasa_fallec)
+rm(idx)
+rm(labels_casos)
+rm(labels_fall)
+rm(labels_tc)
+rm(quantiles_casos)
+rm(quantiles_fall)
+rm(quantiles_tc)
+rm(regiones)
+rm(casos)
+
 # paso 5 - ploteamos ####
-# ploteamos Casos_activos_confirmados_qt por region
+
+# Casos_activos_confirmados_qt
 gg1 <- ggplot() +
   geom_sf(data = sft, color= 'white', size=0.2,
           aes(fill = Casos_activos_confirmados_qt, colour = Casos_activos_confirmados_qt)) +
@@ -137,10 +185,10 @@ gg1 <- ggplot() +
   labs(x = NULL, 
        y = NULL, 
        title = "",
-       subtitle ="Casos Activos") +  
+       subtitle ="Casos Activos Confirmados") +  
   
   scale_fill_viridis(option = "magma",
-                     name = "Casos\nActivos\ncovid19",
+                     name = "Casos\nActivos",
                      alpha = 1, #0.8 para publicar
                      begin = 0,
                      end = 0.9,
@@ -150,10 +198,11 @@ gg1 <- ggplot() +
                                           reverse = T)) +
   xlim(-8300000, -7200000)
 
-## gg2 - ploteamos tasa_cont_100mil_qt por region
+# tasa_activ_100mil_qt
+
 gg2 <- ggplot() +
   geom_sf(data = sft_tasa100mil, color= 'white', size=0.2,
-          aes(fill = tasa_cont_100mil_qt, colour = tasa_cont_100mil_qt)) +
+          aes(fill = tasa_activ_100mil_qt, colour = tasa_activ_100mil_qt)) +
   
   coord_sf() +
   theme_void() +
@@ -165,10 +214,10 @@ gg2 <- ggplot() +
   labs(x = NULL, 
        y = NULL, 
        title = "",
-       subtitle ="Tasa de contagiados") + 
+       subtitle ="Tasa de incidencia de Casos Activos\ncada 100 mil habitantes") + 
   
   scale_fill_viridis(option = "cividis",
-                     name = "Incidenia de\ncasos activos\ncada 100 mil\nhabitantes",
+                     name = "Incidenia de\ncasos activos",
                      alpha = 1, #0.8 para publicar
                      begin = 0,
                      end = 0.9,
@@ -193,10 +242,10 @@ gg3 <- ggplot() +
   labs(x = NULL, 
        y = NULL, 
        title = "",
-       subtitle ="Tasa de fallecidos") + 
+       subtitle ="Tasa de fallecidos\ncada 100 mil habitantes") + 
   
   scale_fill_viridis(option = "cividis",
-                     name = "Tasa de\nfallecidos\ncada 100 mil\nhabitantes",
+                     name = "Tasa de\nfallecidos",
                      alpha = 1, #0.8 para publicar
                      begin = 0,
                      end = 0.9,
@@ -207,14 +256,14 @@ gg3 <- ggplot() +
   xlim(-8300000, -7200000)
 
 ## grafico combinado
-ggx <- ggarrange(gg1, gg2, gg3 + rremove("x.text"), 
+ggx <- ggarrange(gg1, gg2, gg3 + rremove("x.text"), #lento
                  #labels = c("A", "B", "C"),
                  ncol = 3, nrow = 1)
 
 ggx1 <- annotate_figure(ggx,
-                        top = text_grob("Situación covid19 por regiones\n09 de septiembre de 2020", 
-                                        color = "black", face = "bold", size = 14),
-                        bottom = text_grob("Fuente: Minsal, MinCiencia", 
+                        top = text_grob("Situación covid19 por regiones\n10 de septiembre de 2020", 
+                                        color = "black", face = "bold", size = 16),
+                        bottom = text_grob("Fuente: Minsal, github.com/MinCiencia", 
                                            color = "grey",
                                            hjust = 1.03, x = 1, face = "italic", size = 10))
 
