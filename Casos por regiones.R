@@ -55,6 +55,10 @@ tasa_activ_100mil <- (Casos_activos_confirmados/Poblacion)*100000
 casos <- cbind(Region, Fallecidos_totales, Casos_activos_confirmados, Poblacion, tasa_fallec_100mil, tasa_activ_100mil)
 casos <- as.data.frame(casos)
 
+#
+view(regiones$Region)
+view(casos$Region)
+
 # paso 3 - fortificamos la data por cada calumna del excel que necesitemos ####
 mps_casos <- casos %>% 
   group_by(Region) %>%
