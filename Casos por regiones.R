@@ -24,8 +24,8 @@ regiones$Region <- c("Arica y Parinacota",   "Tarapacá",   "Antofagasta",   "Mag
                      "Los Lagos",   "Los Ríos",   "Araucanía",   "Biobío",   "Ñuble",
                      "Maule",   "O'Higgins")
 
-# Paso 2 - cargamos reporte diario desde Minciencia
-producto4 <- read_csv("https://raw.githubusercontent.com/MinCiencia/Datos-COVID19/master/output/producto4/2020-09-10-CasosConfirmados-totalRegional.csv")
+# Paso 2 - cargamos reporte diario desde Minciencia (ACTUALIZAR FECHA)
+producto4 <- read_csv("https://raw.githubusercontent.com/MinCiencia/Datos-COVID19/master/output/producto4/2020-09-13-CasosConfirmados-totalRegional.csv")
 producto4 <- as.data.frame(producto4)
 
 names(producto4) <- c("Region", "Casos_totales_acumulados", "Casos_nuevos_totales", "Casos_nuevos_con_sintomas",
@@ -56,8 +56,8 @@ casos <- cbind(Region, Fallecidos_totales, Casos_activos_confirmados, Poblacion,
 casos <- as.data.frame(casos)
 
 #
-view(regiones$Region)
-view(casos$Region)
+#view(regiones$Region)
+#view(casos$Region)
 
 # paso 3 - fortificamos la data por cada calumna del excel que necesitemos ####
 mps_casos <- casos %>% 
@@ -265,7 +265,7 @@ ggx <- ggarrange(gg1, gg2, gg3 + rremove("x.text"), #lento
                  ncol = 3, nrow = 1)
 
 ggx1 <- annotate_figure(ggx,
-                        top = text_grob("Situación covid19 por regiones\n10 de septiembre de 2020", 
+                        top = text_grob("Situación covid19 por regiones\n13 de septiembre de 2020", 
                                         color = "black", face = "bold", size = 16),
                         bottom = text_grob("Fuente: Minsal, github.com/MinCiencia", 
                                            color = "grey",
