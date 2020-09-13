@@ -274,3 +274,4 @@ ggx1 <- annotate_figure(ggx,
 # guardamos como imagen (opcional)
 ggsave(plot = ggx1, filename = './Gráficos/Casos por regiones.png', 
        units = 'mm', width = 279, height = 216, dpi = 300)
+ 

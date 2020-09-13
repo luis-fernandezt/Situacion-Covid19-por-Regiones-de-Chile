@@ -191,7 +191,7 @@ gg2 <- ggplot() +
   ylim(-4990000, -4770000) +
   xlim(-8200000, -7970000)
 
-gg2
+gg2 
 
 # graficamos mapa con las tasas de incidencia por comuna
 
