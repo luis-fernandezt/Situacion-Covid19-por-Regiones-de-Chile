@@ -22,10 +22,10 @@ regiones <- st_as_sf(regiones) # lento
 regiones$Region <- c("Arica y Parinacota",   "Tarapacá",   "Antofagasta",   "Magallanes",
                      "Aysén",   "Atacama",   "Coquimbo",   "Valparaíso",   "Metropolitana",
                      "Los Lagos",   "Los Ríos",   "Araucanía",   "Biobío",   "Ñuble",
-                     "Maule",   "O'Higgins")
+                     "Maule",   "O'Higgins") # <- cambiar apostrofe de O'Higgins para coincidir con producto4
 
 # Paso 2 - cargamos reporte diario desde Minciencia (ACTUALIZAR FECHA)
-producto4 <- read_csv("https://raw.githubusercontent.com/MinCiencia/Datos-COVID19/master/output/producto4/2020-09-14-CasosConfirmados-totalRegional.csv")
+producto4 <- read_csv("https://raw.githubusercontent.com/MinCiencia/Datos-COVID19/master/output/producto4/2020-09-18-CasosConfirmados-totalRegional.csv")
 producto4 <- as.data.frame(producto4)
 
 names(producto4) <- c("Region", "Casos_totales_acumulados", "Casos_nuevos_totales", "Casos_nuevos_con_sintomas",
@@ -158,7 +158,6 @@ rm(labels_tc)
 rm(quantiles_casos)
 rm(quantiles_fall)
 rm(quantiles_tc)
-rm(regiones)
 rm(casos)
 
 # paso 5 - ploteamos ####
@@ -262,7 +261,7 @@ ggx <- ggarrange(gg1, gg2, gg3 + rremove("x.text"), #lento
                  ncol = 3, nrow = 1)
 
 ggx1 <- annotate_figure(ggx,
-                        top = text_grob("Situación covid19 por regiones\n14 de septiembre de 2020", 
+                        top = text_grob("Situación covid19 por regiones\n18 de septiembre de 2020", 
                                         color = "black", face = "bold", size = 16),
                         bottom = text_grob("Fuente: Minsal, github.com/MinCiencia", 
                                            color = "grey",

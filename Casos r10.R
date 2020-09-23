@@ -148,7 +148,7 @@ gg1 <- ggplot(sdt_comunas, aes(x=Fecha, y=Casos_activos, group=Comuna, color=Com
   labs(x = "Fecha", 
        y = "Casos Activos", 
        title = "Evolución de Casos Activos de Covid-19 en comunas de\nTemuco, Valdivia, Osorno y Puerto Montt", 
-       subtitle = "14 de septiembre de 2020", 
+       subtitle = "18 de septiembre de 2020", 
        caption = "Fuente: Minsal.cl, github.com/MinCiencia")
 
 gg1
@@ -185,7 +185,7 @@ gg2 <- ggplot() +
   labs(x = NULL, 
        y = NULL, 
        title = "Región de Los Lagos,\nComunas con Casos Activos de covid-19", 
-       subtitle = "14 de septiembre de 2020", 
+       subtitle = "18 de septiembre de 2020", 
        caption = "Fuente: Minsal.cl, github.com/MinCiencia") +
   
   annotation_north_arrow(location = "tr", 
@@ -236,7 +236,7 @@ gg3 <- ggplot() +
   labs(x = NULL, 
        y = NULL, 
        title = "Región de Los Lagos,\nTasa de Incidencia de Casos Activos por comunas", 
-       subtitle = "14 de septiembre de 2020", 
+       subtitle = "18 de septiembre de 2020", 
        caption = "Fuente: Minsal.cl, github.com/MinCiencia") +
   
   annotation_north_arrow(location = "tr", 
