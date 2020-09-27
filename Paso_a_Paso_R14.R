@@ -70,6 +70,8 @@ names(producto19)
 
 # Importamos plan paso a paso por comunas
 Hoja_1 <- read_csv("Paso/Hoja 1.csv", col_types = cols(Paso = col_number()))
+Hoja_1 <- read_excel("Paso/Hoja 1.xlsx")
+
 
 #paso4. preparacion de la base de datos ####
 
@@ -134,11 +136,12 @@ sft_tasa <- sft_tasa %>% mutate(centroid = map(geometry, st_centroid),
 #paso 5 -  ploteamos ####
 
 #Grafico 1. sdt casos activos grandes comunas macro zona sur
-gg1 <- ggplot(sdt_comunas, aes(x=Fecha, y=Casos_activos, group=Comuna, color=Comuna)) +
+gg1 <- ggplot(sdt_comunas, aes(x=Fecha, y=Tasa_cont_100mil, group=Comuna, color=Comuna)) +
   geom_line(size = 1.3, data = sdt_comunas) +
   geom_point(size = 1.7, data = sdt_comunas) +
   scale_colour_viridis_d(name = "", option = 'B', begin = 0, end = 0.8, direction = -1, alpha=0.9) +
-  geom_text(aes(label = Casos_activos), size= 6, hjust = -0.1, data = sdt_comunas 
+  geom_text(aes(label=format(round(Tasa_cont_100mil, 1), decimal.mark = ",", sep_mark = ".")), 
+            size= 6, hjust = -0.1, data = sdt_comunas 
             %>% filter(Fecha == max(Fecha)), show.legend = F) +
   theme_classic() +
   theme(legend.position = c(0.2,0.8), 
@@ -146,13 +149,16 @@ gg1 <- ggplot(sdt_comunas, aes(x=Fecha, y=Casos_activos, group=Comuna, color=Com
         plot.subtitle = element_text(hjust = 0.5, size = 16, face = "italic"),
         legend.text = element_text(color = "black", size = 14)) +
   scale_x_date(date_breaks = '3 day', date_labels = "%b %d") +
-  scale_y_continuous(trans = 'sqrt', breaks = c(1, 5, 10, 50, 100,150, 200, 300, 400, 500, 600, 700)) +
+  scale_y_continuous(trans = 'sqrt', breaks = c(1, 5, 10, 20, 50, 100, 150, 200)) +
+  
+  geom_hline(aes(yintercept = 50), color="red", linetype = 'dashed') +
+  
   theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
   labs(x = "Fecha", 
-       y = "Casos Activos", 
-       title = "Evolución de Casos Activos de Covid-19 en comunas de\nTemuco, Valdivia, Osorno y Puerto Montt", 
-       subtitle = "21 de septiembre de 2020", 
-       caption = "Fuente: Minsal.cl")
+       y = "Tasa de incidencia de casos activos", 
+       title = "Tasa de incidencia Casos Activos de Covid-19\nTemuco, Valdivia, Osorno y Puerto Montt", 
+       subtitle = "25 de septiembre de 2020", 
+       caption = "Fuente: Minsal.cl, Gob.cl")
 
 gg1
 
@@ -175,11 +181,15 @@ ggplot() +
   
   geom_sf(data = comunas_sf, color= 'white', size=0.5, fill = 'transparent') +
   
-  geom_text_repel(data=sft_casos, size= 5, color= 'black', fontface = 'bold',  segment.color = NA,
+  geom_text_repel(data=sft_tasa, size= 5, color= 'black', fontface = 'bold',  segment.color = NA,
                   hjust = 0.5, vjust  = 0.51, aes(coords_x, coords_y, label= Comuna)) +
   
-  geom_label_repel(data=sft_casos, size= 5, color= 'white', fontface = 'bold', fill = 'red', segment.color = NA,
-                   hjust = 0.5, vjust  = 0.49, aes(coords_x, coords_y, label= Casos_activos)) + 
+  geom_label_repel(data=sft_tasa, size= 5, color= 'white', fontface = 'bold', fill = 'red', segment.color = NA,
+                   hjust = 0.5, vjust  = 0.49, aes(coords_x, 
+                                                   coords_y, 
+                                                   label=format(round(Tasa_cont_100mil, 1), 
+                                                                decimal.mark = ",", 
+                                                                sep_mark = "."))) + 
   coord_sf() +
   theme_void() +
   theme(plot.title = element_text(hjust = 0.5, size = 16, face = "bold"),
@@ -192,8 +202,8 @@ ggplot() +
   
   labs(x = NULL, 
        y = NULL, 
-       title = "Región de Los Ríos\nComunas con Casos Activos de covid-19\ny etapa del Plan Paso a Paso", 
-       subtitle = "21 de septiembre de 2020", 
+       title = "Región de Los Ríos,\nTasa de Incidencia de Casos Activos por comunas\ny etapa del Plan Paso a Paso", 
+       subtitle = "25 de septiembre de 2020", 
        caption = "Fuente: Minsal.cl | gob.cl   ") +
   
   annotation_north_arrow(location = "tr", 
