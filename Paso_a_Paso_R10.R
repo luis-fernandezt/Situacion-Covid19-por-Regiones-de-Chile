@@ -173,7 +173,7 @@ gg1 <- ggplot(sdt_comunas, aes(x=Fecha, y=Tasa_cont_100mil, group=Comuna, color=
   labs(x = "Fecha", 
        y = "Tasa de incidencia de casos activos", 
        title = "Tasa de incidencia Casos Activos de Covid-19\nTemuco, Valdivia, Osorno y Puerto Montt", 
-       subtitle = "25 de septiembre de 2020", 
+       subtitle = "28 de septiembre de 2020", 
        caption = "Fuente: Minsal.cl, Gob.cl")
 
 gg1
@@ -214,12 +214,13 @@ ggplot() +
         legend.direction = "horizontal",
         legend.key.size = unit(0.5, "cm"), #alto leyenda
         legend.key.width = unit(0.5, "cm"), #ancho leyenda 
+        legend.text= element_text(hjust = 0, size = 10, face = "bold"),
         legend.background = element_rect(fill = alpha('white', 0),colour = alpha('white', 0.0))) + 
   
   labs(x = NULL, 
        y = NULL, 
        title = "Región de Los Lagos,\nTasa de Incidencia de Casos Activos por comunas\ny etapa del Plan Paso a Paso", 
-       subtitle = "25 de septiembre de 2020", 
+       subtitle = "28 de septiembre de 2020", 
        caption = "Fuente: Minsal.cl | gob.cl   ") +
   
   annotation_north_arrow(location = "tr", 
