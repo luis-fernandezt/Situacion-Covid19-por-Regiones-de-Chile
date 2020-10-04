@@ -25,7 +25,7 @@ regiones$Region <- c("Arica y Parinacota",   "Tarapacá",   "Antofagasta",   "Mag
                      "Maule",   "O'Higgins") # <- cambiar apostrofe de O'Higgins para coincidir con producto4
 
 # Paso 2 - cargamos reporte diario desde Minciencia (ACTUALIZAR FECHA)
-producto4 <- read_csv("https://raw.githubusercontent.com/MinCiencia/Datos-COVID19/master/output/producto4/2020-09-28-CasosConfirmados-totalRegional.csv")
+producto4 <- read_csv("https://raw.githubusercontent.com/MinCiencia/Datos-COVID19/master/output/producto4/2020-10-02-CasosConfirmados-totalRegional.csv")
 producto4 <- as.data.frame(producto4)
 
 names(producto4) <- c("Region", "Casos_totales_acumulados", "Casos_nuevos_totales", "Casos_nuevos_con_sintomas",
@@ -261,9 +261,9 @@ ggx <- ggarrange(gg1, gg2, gg3 + rremove("x.text"), #lento
                  ncol = 3, nrow = 1)
 
 ggx1 <- annotate_figure(ggx,
-                        top = text_grob("Situación covid19 por regiones\n28 de septiembre de 2020", 
+                        top = text_grob("Situación covid19 por regiones\n02 de octubre de 2020", 
                                         color = "black", face = "bold", size = 16),
-                        bottom = text_grob("Fuente: Minsal, github.com/MinCiencia", 
+                        bottom = text_grob("Fuente: Minsal.cl, Gob.cl", 
                                            color = "grey",
                                            hjust = 1.03, x = 1, face = "italic", size = 10))
 

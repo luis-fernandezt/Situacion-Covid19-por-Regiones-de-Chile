@@ -82,6 +82,7 @@ names(producto19)
 
 # Importamos plan paso a paso por comunas
 Hoja_1 <- read_csv("Paso/Hoja 1.csv", col_types = cols(Paso = col_number()))
+Hoja_1 <- read_excel("Paso/Hoja 1.xlsx")
 
 #paso4. preparacion de la base de datos ####
 
@@ -91,12 +92,6 @@ Valdivia <- producto19 %>%  filter(Codigo_comuna %in% c("14101"))
 Osorno <- producto19 %>%  filter(Codigo_comuna %in% c("10301"))
 PuertoMontt <- producto19 %>%  filter(Codigo_comuna %in% c("10101"))
 sdt_comunas <- rbind(Temuco, Valdivia, Osorno,  PuertoMontt)
-
-#removemos
-rm(Temuco)
-rm(Valdivia)
-rm(Osorno)
-rm(PuertoMontt)
 
 # para mapas
 # filtramos por region y ultima fecha reportada
@@ -143,12 +138,6 @@ sft_tasa <- sft_tasa %>% mutate(centroid = map(geometry, st_centroid),
                                   coords_x = map_dbl(coords, 1), 
                                   coords_y = map_dbl(coords, 2))
 
-#removemos variables que no se utilizaran
-rm(mps_activo)
-rm(mps_tc)
-rm(producto19)
-rm(tbl) 
-
 #paso 5 -  ploteamos ####
 
 #Grafico 1. sdt casos activos grandes comunas macro zona sur
@@ -173,7 +162,7 @@ gg1 <- ggplot(sdt_comunas, aes(x=Fecha, y=Tasa_cont_100mil, group=Comuna, color=
   labs(x = "Fecha", 
        y = "Tasa de incidencia de casos activos", 
        title = "Tasa de incidencia Casos Activos de Covid-19\nTemuco, Valdivia, Osorno y Puerto Montt", 
-       subtitle = "28 de septiembre de 2020", 
+       subtitle = "02 de octubre de 2020", 
        caption = "Fuente: Minsal.cl, Gob.cl")
 
 gg1
@@ -220,7 +209,7 @@ ggplot() +
   labs(x = NULL, 
        y = NULL, 
        title = "Región de Los Lagos,\nTasa de Incidencia de Casos Activos por comunas\ny etapa del Plan Paso a Paso", 
-       subtitle = "28 de septiembre de 2020", 
+       subtitle = "02 de octubre de 2020", 
        caption = "Fuente: Minsal.cl | gob.cl   ") +
   
   annotation_north_arrow(location = "tr", 
