@@ -82,12 +82,6 @@ Osorno <- producto19 %>%  filter(Codigo_comuna %in% c("10301"))
 PuertoMontt <- producto19 %>%  filter(Codigo_comuna %in% c("10101"))
 sdt_comunas <- rbind(Temuco, Valdivia, Osorno,  PuertoMontt)
 
-#removemos
-rm(Temuco)
-rm(Valdivia)
-rm(Osorno)
-rm(PuertoMontt)
-
 # para mapas
 # filtramos por region y ultima fecha reportada
 tbl <- producto19 %>%  filter(Codigo_region == 14)
@@ -157,7 +151,7 @@ gg1 <- ggplot(sdt_comunas, aes(x=Fecha, y=Tasa_cont_100mil, group=Comuna, color=
   labs(x = "Fecha", 
        y = "Tasa de incidencia de casos activos", 
        title = "Tasa de incidencia Casos Activos de Covid-19\nTemuco, Valdivia, Osorno y Puerto Montt", 
-       subtitle = "02 de octubre de 2020", 
+       subtitle = "05 de octubre de 2020", 
        caption = "Fuente: Minsal.cl, Gob.cl")
 
 gg1
@@ -204,7 +198,7 @@ ggplot() +
   labs(x = NULL, 
        y = NULL, 
        title = "Región de Los Ríos,\nTasa de Incidencia de Casos Activos por comunas\ny etapa del Plan Paso a Paso", 
-       subtitle = "02 de octubre de 2020", 
+       subtitle = "05 de octubre de 2020", 
        caption = "Fuente: Minsal.cl | gob.cl   ") +
   
   annotation_north_arrow(location = "tr", 

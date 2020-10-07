@@ -61,14 +61,6 @@ Glaciar <- st_as_sf(Glaciar)
 Ventisquero <- aggregate(Ventisquero, "Nombre")
 Ventisquero <- st_as_sf(Ventisquero)
 
-# removemos poligonos (shp) que no utilizaremos
-rm(shp)
-rm(shp_masas_lacustres)
-rm(r10)
-
-
-
-
 # paso 3. cargamos archivo *.csv "producto 19" agregada por comunas desde repositorio MinCiencia ####
 producto19 <- read_csv("https://raw.githubusercontent.com/MinCiencia/Datos-COVID19/master/output/producto19/CasosActivosPorComuna_std.csv")
 producto19 <- as.data.frame(producto19)
@@ -162,7 +154,7 @@ gg1 <- ggplot(sdt_comunas, aes(x=Fecha, y=Tasa_cont_100mil, group=Comuna, color=
   labs(x = "Fecha", 
        y = "Tasa de incidencia de casos activos", 
        title = "Tasa de incidencia Casos Activos de Covid-19\nTemuco, Valdivia, Osorno y Puerto Montt", 
-       subtitle = "02 de octubre de 2020", 
+       subtitle = "05 de octubre de 2020", 
        caption = "Fuente: Minsal.cl, Gob.cl")
 
 gg1
@@ -209,7 +201,7 @@ ggplot() +
   labs(x = NULL, 
        y = NULL, 
        title = "Región de Los Lagos,\nTasa de Incidencia de Casos Activos por comunas\ny etapa del Plan Paso a Paso", 
-       subtitle = "02 de octubre de 2020", 
+       subtitle = "05 de octubre de 2020", 
        caption = "Fuente: Minsal.cl | gob.cl   ") +
   
   annotation_north_arrow(location = "tr", 
@@ -221,4 +213,4 @@ ggplot() +
   ylim(-5450000, -4900000) +
   xlim(-8350000, -7950000)
 
-gg2
+gg2 
