@@ -73,8 +73,9 @@ producto19$Tasa_cont_100mil <- (producto19$Casos_activos/producto19$Poblacion)*1
 names(producto19)
 
 # Importamos plan paso a paso por comunas
-Hoja_1 <- read_csv("Paso/Hoja 1.csv", col_types = cols(Paso = col_number()))
+Hoja_1 <- read_delim("Paso/Hoja 1.csv", ";",escape_double = FALSE, trim_ws = TRUE)
 Hoja_1 <- read_excel("Paso/Hoja 1.xlsx")
+
 
 #paso4. preparacion de la base de datos ####
 
@@ -154,7 +155,7 @@ gg1 <- ggplot(sdt_comunas, aes(x=Fecha, y=Tasa_cont_100mil, group=Comuna, color=
   labs(x = "Fecha", 
        y = "Tasa de incidencia de casos activos", 
        title = "Tasa de incidencia Casos Activos de Covid-19\nTemuco, Valdivia, Osorno y Puerto Montt", 
-       subtitle = "09 de octubre de 2020", 
+       subtitle = "26 de octubre de 2020", 
        caption = "Fuente: Minsal.cl, Gob.cl")
 
 gg1
@@ -201,7 +202,7 @@ ggplot() +
   labs(x = NULL, 
        y = NULL, 
        title = "Región de Los Lagos,\nTasa de Incidencia de Casos Activos por comunas\ny etapa del Plan Paso a Paso", 
-       subtitle = "09 de octubre de 2020", 
+       subtitle = "26 de octubre de 2020", 
        caption = "Fuente: Minsal.cl | gob.cl   ") +
   
   annotation_north_arrow(location = "tr", 

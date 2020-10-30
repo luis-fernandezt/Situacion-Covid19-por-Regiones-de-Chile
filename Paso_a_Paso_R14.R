@@ -111,7 +111,7 @@ sft_casos <- sft_casos %>% filter(Casos_activos > 0)
 
 sft_tasa <- st_as_sf(comunas_sf) %>% 
   inner_join(., y = mps_tc, by = c('Comuna' = 'Comuna'))
-sft_tasa <- sft_tasa %>% filter(Tasa_cont_100mil > 0)
+#sft_tasa <- sft_tasa %>% filter(Tasa_cont_100mil > 0)
 
 sft_paso <- st_as_sf(comunas_paso) %>% 
   inner_join(., y = mps_paso, by = c('Comuna' = 'COMUNA'))
@@ -151,7 +151,7 @@ gg1 <- ggplot(sdt_comunas, aes(x=Fecha, y=Tasa_cont_100mil, group=Comuna, color=
   labs(x = "Fecha", 
        y = "Tasa de incidencia de casos activos", 
        title = "Tasa de incidencia Casos Activos de Covid-19\nTemuco, Valdivia, Osorno y Puerto Montt", 
-       subtitle = "09 de octubre de 2020", 
+       subtitle = "26 de octubre de 2020", 
        caption = "Fuente: Minsal.cl, Gob.cl")
 
 gg1
@@ -198,7 +198,7 @@ ggplot() +
   labs(x = NULL, 
        y = NULL, 
        title = "Región de Los Ríos,\nTasa de Incidencia de Casos Activos por comunas\ny etapa del Plan Paso a Paso", 
-       subtitle = "09 de octubre de 2020", 
+       subtitle = "26 de octubre de 2020", 
        caption = "Fuente: Minsal.cl | gob.cl   ") +
   
   annotation_north_arrow(location = "tr", 
