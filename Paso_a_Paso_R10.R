@@ -77,6 +77,8 @@ Hoja_1 <- read_delim("Paso/Hoja 1.csv", ";",escape_double = FALSE, trim_ws = TRU
 Hoja_1 <- read_excel("Paso/Hoja 1.xlsx")
 
 
+
+
 #paso4. preparacion de la base de datos ####
 
 # creamos df para serie de tiempo grandes comunas de la macro zona sur
@@ -139,14 +141,14 @@ gg1 <- ggplot(sdt_comunas, aes(x=Fecha, y=Tasa_cont_100mil, group=Comuna, color=
   geom_point(size = 1.7, data = sdt_comunas) +
   scale_colour_viridis_d(name = "", option = 'B', begin = 0, end = 0.8, direction = -1, alpha=0.9) +
   geom_text(aes(label=format(round(Tasa_cont_100mil, 1), decimal.mark = ",", sep_mark = ".")), 
-            size= 6, hjust = -0.1, data = sdt_comunas 
+            size= 5, hjust = -0.1, data = sdt_comunas 
             %>% filter(Fecha == max(Fecha)), show.legend = F) +
   theme_classic() +
   theme(legend.position = c(0.2,0.8), 
-        plot.title = element_text(hjust = 0.5, size = 18, face = "bold"),
-        plot.subtitle = element_text(hjust = 0.5, size = 16, face = "italic"),
-        legend.text = element_text(color = "black", size = 14)) +
-  scale_x_date(date_breaks = '3 day', date_labels = "%b %d") +
+        plot.title = element_text(hjust = 0.5, size = 16, face = "bold"),
+        plot.subtitle = element_text(hjust = 0.5, size = 14, face = "italic"),
+        legend.text = element_text(color = "black", size = 12)) +
+  scale_x_date(date_breaks = '4 day', date_labels = "%b %d") +
   scale_y_continuous(trans = 'sqrt', breaks = c(1, 5, 10, 20, 50, 100, 150, 200)) +
   
   geom_hline(aes(yintercept = 50), color="red", linetype = 'dashed') +
@@ -154,9 +156,13 @@ gg1 <- ggplot(sdt_comunas, aes(x=Fecha, y=Tasa_cont_100mil, group=Comuna, color=
   theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
   labs(x = "Fecha", 
        y = "Tasa de incidencia de casos activos", 
-       title = "Tasa de incidencia Casos Activos de Covid-19\nTemuco, Valdivia, Osorno y Puerto Montt", 
-       subtitle = "26 de octubre de 2020", 
-       caption = "Fuente: Minsal.cl, Gob.cl")
+       title = "Tasa de incidencia Casos Activos\nTemuco, Valdivia, Osorno y Puerto Montt", 
+       subtitle = "16 de noviembre de 2020", 
+       caption = "Fuente: Minsal.cl | Gob.cl")
+
+
+
+
 
 gg1
 
@@ -202,7 +208,7 @@ ggplot() +
   labs(x = NULL, 
        y = NULL, 
        title = "Región de Los Lagos,\nTasa de Incidencia de Casos Activos por comunas\ny etapa del Plan Paso a Paso", 
-       subtitle = "26 de octubre de 2020", 
+       subtitle = "16 de noviembre de 2020", 
        caption = "Fuente: Minsal.cl | gob.cl   ") +
   
   annotation_north_arrow(location = "tr", 
