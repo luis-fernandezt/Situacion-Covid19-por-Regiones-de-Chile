@@ -69,7 +69,27 @@ producto19$Tasa_cont_100mil <- (producto19$Casos_activos/producto19$Poblacion)*1
 names(producto19)
 
 # Importamos plan paso a paso por comunas
-Hoja_1 <- read_excel("Paso/Hoja 1.xlsx")
+Hoja_1 <- read_csv("Paso/Hoja 1.csv")
+class(Hoja_1)
+Hoja_1 <- data.frame(Hoja_1)
+
+names(Hoja_1)
+Paso1 <- vector()
+
+Paso1[Hoja_1$Paso == 1] <- 1
+Paso1[Hoja_1$Paso == 2] <- 2
+Paso1[Hoja_1$Paso == 3] <- 3
+Paso1[Hoja_1$Paso == 4] <- 4
+Paso1[Hoja_1$Paso == 5] <- 5
+
+Hoja_1$Paso1 <- as.factor(Paso1)
+levels(Hoja_1$Paso1)
+levels(Hoja_1$Paso1) <- c("Cuarentena", "Transición", "Preparación", "Apertura Inicial")
+names(Hoja_1)
+
+
+
+
 
 
 #paso4. preparacion de la base de datos ####
@@ -100,7 +120,7 @@ mps_tc <- tbl %>%
 
 mps_paso <- Hoja_1 %>% 
   group_by(COMUNA) %>% #agrupamos casos totales
-  dplyr::summarise(ESTADO) %>%  
+  dplyr::summarise(Paso1) %>%  
   ungroup()
 
 # unimos la columna "Comuna" del df producto 19 con en shp agregado por "Comuna"
@@ -137,7 +157,7 @@ colors <- c("Cuarentena" = "#f75c5c",
 
 gg2 <- 
 ggplot() +
-  geom_sf(data = sft_paso, color= 'transparent', size=0.5, aes(fill = ESTADO, colour = ESTADO)) +
+  geom_sf(data = sft_paso, color= 'transparent', size=0.5, aes(fill = Paso1, colour = Paso1)) +
   scale_fill_manual(values = colors, name= "")+
 
   geom_sf(data = Lago, color= 'transparent', fill = '#D6F1FF', alpha =0.8) +
@@ -169,7 +189,7 @@ ggplot() +
   labs(x = NULL, 
        y = NULL, 
        title = "Región de Los Ríos,\nTasa de Incidencia de Casos Activos por comunas\ny etapa del Plan Paso a Paso", 
-       subtitle = "16 de noviembre de 2020", 
+       subtitle = "04 de diciembre de 2020", 
        caption = "Fuente: Minsal.cl | gob.cl   ") +
   
   annotation_north_arrow(location = "tr", 
