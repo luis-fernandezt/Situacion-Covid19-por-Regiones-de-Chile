@@ -166,7 +166,7 @@ gg1 <- ggplot(sdt_comunas, aes(x=Fecha, y=Tasa_cont_100mil, group=Comuna, color=
         plot.title = element_text(hjust = 0.5, size = 16, face = "bold"),
         plot.subtitle = element_text(hjust = 0.5, size = 14, face = "italic"),
         legend.text = element_text(color = "black", size = 12)) +
-  scale_x_date(date_breaks = '4 day', date_labels = "%b %d") +
+  scale_x_date(date_breaks = '7 day', date_labels = "%b %d") +
   scale_y_continuous(trans = 'sqrt', breaks = c(1, 5, 10, 20, 50, 100, 150, 200)) +
   
   geom_hline(aes(yintercept = 50), color="red", linetype = 'dashed') +
@@ -175,7 +175,7 @@ gg1 <- ggplot(sdt_comunas, aes(x=Fecha, y=Tasa_cont_100mil, group=Comuna, color=
   labs(x = "Fecha", 
        y = "Tasa de incidencia de casos activos", 
        title = "Tasa de incidencia Casos Activos\nTemuco, Valdivia, Osorno y Puerto Montt", 
-       subtitle = "04 de diciembre de 2020", 
+       subtitle = "11 de diciembre de 2020", 
        caption = "Fuente: Minsal.cl | Gob.cl")
 
 gg1
@@ -191,7 +191,7 @@ colors <- c("Cuarentena" = "#f75c5c",
 gg2 <- 
 ggplot() +
   geom_sf(data = sft_paso, color= 'transparent', size=0.5, aes(fill = Paso1, colour = Paso1)) +
-  scale_fill_manual(values = colors, name= "")+
+  scale_fill_manual(values = colors, name= "") +
 
   geom_sf(data = Lago, color= 'transparent', fill = '#D6F1FF', alpha =0.8) +
   geom_sf(data = Glaciar, color= 'transparent', fill = '#D6F1FF', alpha =0.8) +
@@ -222,7 +222,7 @@ ggplot() +
   labs(x = NULL, 
        y = NULL, 
        title = "Región de Los Lagos,\nTasa de Incidencia de Casos Activos por comunas\ny etapa del Plan Paso a Paso", 
-       subtitle = "04 de diciembre de 2020", 
+       subtitle = "11 de diciembre de 2020", 
        caption = "Fuente: Minsal.cl | gob.cl   ") +
   
   annotation_north_arrow(location = "tr", 
