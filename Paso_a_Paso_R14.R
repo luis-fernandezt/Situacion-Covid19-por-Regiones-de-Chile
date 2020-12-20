@@ -87,20 +87,6 @@ levels(Hoja_1$Paso1)
 levels(Hoja_1$Paso1) <- c("Cuarentena", "Transición", "Preparación", "Apertura Inicial")
 names(Hoja_1)
 
-
-
-
-
-
-#paso4. preparacion de la base de datos ####
-
-# creamos df para serie de tiempo grandes comunas de la macro zona sur
-Temuco <- producto19 %>%  filter(Codigo_comuna %in% c("09101"))
-Valdivia <- producto19 %>%  filter(Codigo_comuna %in% c("14101"))
-Osorno <- producto19 %>%  filter(Codigo_comuna %in% c("10301"))
-PuertoMontt <- producto19 %>%  filter(Codigo_comuna %in% c("10101"))
-sdt_comunas <- rbind(Temuco, Valdivia, Osorno,  PuertoMontt)
-
 # para mapas
 # filtramos por region y ultima fecha reportada
 tbl <- producto19 %>%  filter(Codigo_region == 14)
@@ -189,7 +175,7 @@ ggplot() +
   labs(x = NULL, 
        y = NULL, 
        title = "Región de Los Ríos,\nTasa de Incidencia de Casos Activos por comunas\ny etapa del Plan Paso a Paso", 
-       subtitle = "11 de diciembre de 2020", 
+       subtitle = "18 de diciembre de 2020", 
        caption = "Fuente: Minsal.cl | gob.cl   ") +
   
   annotation_north_arrow(location = "tr", 

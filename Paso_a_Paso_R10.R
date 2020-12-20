@@ -175,7 +175,7 @@ gg1 <- ggplot(sdt_comunas, aes(x=Fecha, y=Tasa_cont_100mil, group=Comuna, color=
   labs(x = "Fecha", 
        y = "Tasa de incidencia de casos activos", 
        title = "Tasa de incidencia Casos Activos\nTemuco, Valdivia, Osorno y Puerto Montt", 
-       subtitle = "11 de diciembre de 2020", 
+       subtitle = "18 de diciembre de 2020", 
        caption = "Fuente: Minsal.cl | Gob.cl")
 
 gg1
@@ -222,7 +222,7 @@ ggplot() +
   labs(x = NULL, 
        y = NULL, 
        title = "Región de Los Lagos,\nTasa de Incidencia de Casos Activos por comunas\ny etapa del Plan Paso a Paso", 
-       subtitle = "11 de diciembre de 2020", 
+       subtitle = "18 de diciembre de 2020", 
        caption = "Fuente: Minsal.cl | gob.cl   ") +
   
   annotation_north_arrow(location = "tr", 
