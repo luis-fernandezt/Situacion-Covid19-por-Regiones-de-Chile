@@ -175,7 +175,7 @@ ggplot() +
   labs(x = NULL, 
        y = NULL, 
        title = "Región de Los Ríos,\nTasa de Incidencia de Casos Activos por comunas\ny etapa del Plan Paso a Paso", 
-       subtitle = "18 de diciembre de 2020", 
+       subtitle = "25 de diciembre de 2020", 
        caption = "Fuente: Minsal.cl | gob.cl   ") +
   
   annotation_north_arrow(location = "tr", 
