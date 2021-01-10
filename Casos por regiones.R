@@ -1,4 +1,4 @@
-# Script guardado y codificado en Latin1 para evitar pérdida de caracteres
+# Script guardado y codificado en Latin1 para evitar pÃ©rdida de caracteres
 # cargamos librerias
 require(raster)
 require(tidyverse)
@@ -10,7 +10,7 @@ require(ggspatial)
 library(ggrepel)
 library(ggpubr)
 
-# paso 1. Cargamos el polígono con las regiones####
+# paso 1. Cargamos el polÃ­gono con las regiones####
 shp <- shapefile('./shp/Regional.shp')
 shp@data$Region <- iconv(shp@data$Region, from = 'UTF-8', to = 'latin1') 
 shp <- shp[shp@data$Region != "Zona sin demarcar" ,  ]
@@ -19,13 +19,13 @@ regiones <- aggregate(shp, 'Region') # agregamos por regiones
 regiones <- st_as_sf(regiones) # lento
 
 # cambiamos los nombres de las regiones para que coincidan con los nombres del archivo .csv
-regiones$Region <- c("Arica y Parinacota",   "Tarapacá",   "Antofagasta",   "Magallanes",
-                     "Aysén",   "Atacama",   "Coquimbo",   "Valparaíso",   "Metropolitana",
-                     "Los Lagos",   "Los Ríos",   "Araucanía",   "Biobío",   "Ñuble",
-                     "Maule",   "O'Higgins") # <- cambiar apostrofe de O'Higgins para coincidir con producto4
+regiones$Region <- c("Arica y Parinacota",   "TarapacÃ¡",   "Antofagasta",   "Magallanes",
+                     "AysÃ©n",   "Atacama",   "Coquimbo",   "ValparaÃ­so",   "Metropolitana",
+                     "Los Lagos",   "Los RÃ­os",   "AraucanÃ­a",   "BiobÃ­o",   "Ã‘uble",
+                     "Maule",   "Oâ€™Higgins") # <- cambiar apostrofe de O'Higgins para coincidir con producto4
 
 # Paso 2 - cargamos reporte diario desde Minciencia (ACTUALIZAR FECHA)
-producto4 <- read_csv("https://raw.githubusercontent.com/MinCiencia/Datos-COVID19/master/output/producto4/2020-12-11-CasosConfirmados-totalRegional.csv")
+producto4 <- read_csv("https://raw.githubusercontent.com/MinCiencia/Datos-COVID19/master/output/producto4/2021-01-09-CasosConfirmados-totalRegional.csv")
 producto4 <- as.data.frame(producto4)
 
 names(producto4) <- c("Region", "Casos_totales_acumulados", "Casos_nuevos_totales", "Casos_nuevos_con_sintomas",
@@ -33,7 +33,7 @@ names(producto4) <- c("Region", "Casos_totales_acumulados", "Casos_nuevos_totale
                       "Fallecidos_totales", "Casos_confirmados_recuperados", "Casos_probables_acumulados", 
                       "Casos_activos_probables")
 
-# agregamos poblacion regional según datos del INE
+# agregamos poblacion regional segÃºn datos del INE
 producto4$Poblacion <- c("252110", "382773", "691854", "314709", "836096", "1960170", "8125072", "991063",
                          "1131939", "511551", "1663696", "1014343", "405835", "891440", "107297", "178362",
                          NA, "19458310")
@@ -261,13 +261,13 @@ ggx <- ggarrange(gg1, gg2, gg3 + rremove("x.text"), #lento
                  ncol = 3, nrow = 1)
 
 ggx1 <- annotate_figure(ggx,
-                        top = text_grob("Situación por regiones\n11 de diciembre de 2020", 
+                        top = text_grob("SituaciÃ³n por regiones\n08 de enero de 2021", 
                                         color = "black", face = "bold", size = 16),
                         bottom = text_grob("Fuente: Minsal.cl, Gob.cl", 
                                            color = "grey",
                                            hjust = 1.03, x = 1, face = "italic", size = 10))
 
 # guardamos como imagen (opcional)
-ggsave(plot = ggx1, filename = './Gráficos/Casos por regiones.png', 
+ggsave(plot = ggx1, filename = './GrÃ¡ficos/Casos por regiones.png', 
        units = 'mm', width = 279, height = 216, dpi = 300)
  
