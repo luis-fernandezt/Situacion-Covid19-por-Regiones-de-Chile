@@ -11,7 +11,7 @@ library(ggrepel)
 library(viridis) 
 library(ggpubr)
 
-# paso 2. cargamos poligonos de La Región de Los Lagos ####
+# paso 2. cargamos poligonos de La Región de Los Lagos #### *
 # polígonos dispnibles en: https://www.bcn.cl/siit/mapas_vectoriales
 
 shp <- shapefile('./shp/comunas.shp')
@@ -88,7 +88,7 @@ levels(Hoja_1$Paso1) <- c("Cuarentena", "Transición", "Preparación", "Apertura I
 names(Hoja_1)
 
 # para mapas
-# filtramos por region y ultima fecha reportada
+# filtramos por region y ultima fecha reportada *
 tbl <- producto19 %>%  filter(Codigo_region == 14)
 tbl <- tbl %>% filter(Fecha == max(Fecha)) 
 max(tbl$Fecha)
@@ -175,7 +175,7 @@ ggplot() +
   labs(x = NULL, 
        y = NULL, 
        title = "Región de Los Ríos,\nTasa de Incidencia de Casos Activos por comunas\ny etapa del Plan Paso a Paso", 
-       subtitle = "15 de enero de 2021", 
+       subtitle = as.character(max(producto19$Fecha), format="%d de %B de %Y"),
        caption = "Fuente: Minsal.cl | gob.cl   ") +
   
   annotation_north_arrow(location = "tr", 
@@ -188,4 +188,3 @@ ggplot() +
   xlim(-8200000, -7970000)
 
 gg2
-
