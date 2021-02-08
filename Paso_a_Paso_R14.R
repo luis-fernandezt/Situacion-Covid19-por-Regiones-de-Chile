@@ -141,7 +141,7 @@ colors <- c("Cuarentena" = "#f75c5c",
             "Apertura Inicial" = "#3389d0",
             "Apertura avanzada" = "#a7d1f2")
 
-gg2 <- 
+gg3 <- 
 ggplot() +
   geom_sf(data = sft_paso, color= 'transparent', size=0.5, aes(fill = Paso1, colour = Paso1)) +
   scale_fill_manual(values = colors, name= "")+
@@ -187,4 +187,5 @@ ggplot() +
   ylim(-4990000, -4770000) +
   xlim(-8200000, -7970000)
 
-gg2
+ggsave(plot = gg3, filename = './Gráficos/Map_R14.pdf', 
+       units = 'mm', width = 216, height = 279, dpi = 300)

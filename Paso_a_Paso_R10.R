@@ -178,6 +178,8 @@ gg1 <- ggplot(sdt_comunas, aes(x=Fecha, y=Tasa_cont_100mil, group=Comuna, color=
        subtitle = as.character(max(producto19$Fecha), format="%d de %B de %Y"), 
        caption = "Fuente: Minsal.cl | Gob.cl")
 
+#gg1
+
 ggsave(plot = gg1, filename = './Gráficos/SDT_R10.pdf', 
        units = 'mm', width = 216, height = 279, dpi = 300)
 
@@ -235,5 +237,7 @@ ggplot() +
   ylim(-5450000, -4900000) +
   xlim(-8350000, -7950000)
 
+#gg2
+
 ggsave(plot = gg2, filename = './Gráficos/Map_R10.pdf', 
-       units = 'mm', width = 216, height = 279, dpi = 300)
+      units = 'mm', width = 216, height = 279, dpi = 300)
