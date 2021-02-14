@@ -19,9 +19,9 @@ shp@data$Region <- iconv(shp@data$Region, from = 'UTF-8', to = 'latin1')
 shp@data$Provincia <- iconv(shp@data$Provincia, from = 'UTF-8', to = 'latin1')
 shp@data$Comuna <- iconv(shp@data$Comuna, from = 'UTF-8', to = 'latin1')
 
-r10 <- shp[shp@data$Region=="Región de Los Lagos" ,  ]
+r9 <- shp[shp@data$Region=="Región de La Araucanía" ,  ]
 
-comunas_sf <- aggregate(r10, 'Comuna') #agregamos region por comuna
+comunas_sf <- aggregate(r9, 'Comuna') #agregamos region por comuna
 comunas_sf <- st_as_sf(comunas_sf)
 comunas_paso <- st_as_sf(comunas_sf)
 
@@ -31,15 +31,19 @@ comunas_paso <- st_as_sf(comunas_sf)
 #plot(r10_sf)
 # st_write(r10_sf, dsn = 'shp', layer = 'shp_r10', driver = 'ESRI Shapefile')
 
-comunas_sf$Comuna <- c("San Pablo", "Puqueldon", "Fresia", "Llanquihue", "Osorno", "Purranque", "Puyehue", "Cochamo", "Ancud",
-             "Quellon", "Queilen", "Chonchi", "Puerto Montt", "Rio Negro", "Castro", "Dalcahue", "Quemchi", 
-             "San Juan de la Costa", "Calbuco", "Chaiten", "Los Muermos", "Maullin", "Quinchao", "Curaco de Velez",
-             "Puerto Octay", "Frutillar", "Puerto Varas", "Hualaihue", "Palena", "Futaleufu")
+comunas_sf$Comuna <- c("Cholchol", "Cunco", "Freire", "Galvarino", "Nueva Imperial", "Perquenco",
+                       "Pitrufquen", "Temuco", "Teodoro Schmidt", "Vilcun", "Angol", "Collipulli",
+                       "Curacautin", "Ercilla", "Los Sauces", "Lumaco", "Puren", "Renaico",
+                       "Traiguen", "Victoria", "Gorbea", "Lautaro", "Lonquimay", "Carahue",
+                       "Tolten", "Loncoche", "Curarrehue", "Saavedra", "Villarrica", "Pucon",          
+                       "Padre Las Casas", "Melipeuco")
 
-comunas_paso$Comuna <- c("San Pablo", "Puqueldón", "Fresia", "Llanquihue", "Osorno", "Purranque", "Puyehue", "Cochamó", "Ancud",
-                       "Quellón", "Queilén", "Chonchi", "Puerto Montt", "Río Negro", "Castro", "Dalcahue", "Quemchi", 
-                       "San Juan de la Costa", "Calbuco", "Chaitén", "Los Muermos", "Maullín", "Quinchao", "Curaco de Vélez",
-                       "Puerto Octay", "Frutillar", "Puerto Varas", "Hualaihué", "Palena", "Futaleufú")
+comunas_paso$Comuna <- c("Cholchol", "Cunco", "Freire", "Galvarino", "Nueva Imperial", "Perquenco",
+                         "Pitrufquén", "Temuco", "Teodoro Schmidt", "Vilcún", "Angol", "Collipulli",
+                         "Curacautín", "Ercilla", "Los Sauces", "Lumaco", "Purén", "Renaico",
+                         "Traiguén", "Victoria", "Gorbea", "Lautaro", "Lonquimay", "Carahue",
+                         "Toltén", "Loncoche", "Curarrehue", "Saavedra", "Villarrica", "Pucón",          
+                         "Padre Las Casas", "Melipeuco")
 
 # paso 3. cargamos polígono con las Masas Lacustres #### 
 #objetivo: mostrar grandes masas de agua como lagos en el mapa
@@ -98,17 +102,10 @@ levels(Hoja_1$Paso1) <- c("Cuarentena", "Transición", "Preparación", "Apertura I
 names(Hoja_1)
  
 #paso4. preparacion de la base de datos ####
-
-# creamos df para serie de tiempo grandes comunas de la macro zona sur
-Temuco <- producto19 %>%  filter(Codigo_comuna %in% c("09101"))
-Valdivia <- producto19 %>%  filter(Codigo_comuna %in% c("14101"))
-Osorno <- producto19 %>%  filter(Codigo_comuna %in% c("10301"))
-PuertoMontt <- producto19 %>%  filter(Codigo_comuna %in% c("10101"))
-sdt_comunas <- rbind(Temuco, Valdivia, Osorno,  PuertoMontt)
-
 # para mapas
 # filtramos por region y ultima fecha reportada
-tbl <- producto19 %>%  filter(Codigo_region == 10)
+
+tbl <- producto19 %>%  filter(Codigo_region == "09")
 tbl <- tbl %>% filter(Fecha == max(Fecha)) 
 max(tbl$Fecha)
 
@@ -152,37 +149,6 @@ sft_tasa <- sft_tasa %>% mutate(centroid = map(geometry, st_centroid),
                                   coords_y = map_dbl(coords, 2))
 
 #paso 5 -  ploteamos ####
-
-#Grafico 1. sdt casos activos grandes comunas macro zona sur
-gg1 <- ggplot(sdt_comunas, aes(x=Fecha, y=Tasa_cont_100mil, group=Comuna, color=Comuna)) +
-  geom_line(size = 1.3, data = sdt_comunas) +
-  geom_point(size = 1.7, data = sdt_comunas) +
-  scale_colour_viridis_d(name = "", option = 'B', begin = 0, end = 0.8, direction = -1, alpha=0.9) +
-  geom_text(aes(label=format(round(Tasa_cont_100mil, 1), decimal.mark = ",", sep_mark = ".")), 
-            size= 5, hjust = -0.1, data = sdt_comunas 
-            %>% filter(Fecha == max(Fecha)), show.legend = F) +
-  theme_classic() +
-  theme(legend.position = c(0.2,0.8), 
-        plot.title = element_text(hjust = 0.5, size = 16, face = "bold"),
-        plot.subtitle = element_text(hjust = 0.5, size = 14, face = "italic"),
-        legend.text = element_text(color = "black", size = 12)) +
-  scale_x_date(date_breaks = '7 day', date_labels = "%b %d", limits = c(min(producto19$Fecha), max(producto19$Fecha)+7)) +
-  scale_y_continuous(trans = 'sqrt', breaks = c(1, 5, 10, 20, 50, 100, 150, 200)) +
-  
-  geom_hline(aes(yintercept = 50), color="red", linetype = 'dashed') +
-  
-  theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
-  labs(x = "Fecha", 
-       y = "Tasa de incidencia de casos activos", 
-       title = "Tasa de incidencia Casos Activos\nTemuco, Valdivia, Osorno y Puerto Montt", 
-       subtitle = as.character(max(producto19$Fecha), format="%d de %B de %Y"), 
-       caption = "Fuente: Minsal.cl | Gob.cl")
-
-#gg1
-
-ggsave(plot = gg1, filename = './Gráficos/SDT_R10.pdf', 
-       units = 'mm', width = 216, height = 279, dpi = 300)
-
 # Situación Comunal con Casos Activos de covid-19 y etapa del Plan Paso a Paso ####
 
 colors <- c("Cuarentena" = "#f75c5c", 
@@ -224,7 +190,7 @@ ggplot() +
   
   labs(x = NULL, 
        y = NULL, 
-       title = "Región de Los Lagos,\nTasa de Incidencia de Casos Activos por comunas\ny etapa del Plan Paso a Paso", 
+       title = "Región de La Araucania,\nTasa de Incidencia de Casos Activos por comunas\ny etapa del Plan Paso a Paso", 
        subtitle = as.character(max(producto19$Fecha), format="%d de %B de %Y"), 
        caption = "Fuente: Minsal.cl | gob.cl   ") +
   
@@ -234,10 +200,10 @@ ggplot() +
                          pad_y = unit(0.1, "cm"),
                          style = north_arrow_fancy_orienteering) +
   
-  ylim(-5450000, -4900000) +
-  xlim(-8350000, -7950000)
+  ylim(-4820000, -4530000) +
+  xlim(-8210000, -7890000)
 
 #gg2
 
-ggsave(plot = gg2, filename = './Gráficos/Map_R10.pdf', 
+ggsave(plot = gg2, filename = './Gráficos/Map_R09.pdf', 
       units = 'mm', width = 216, height = 279, dpi = 300)
