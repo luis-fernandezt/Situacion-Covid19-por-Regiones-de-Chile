@@ -190,7 +190,7 @@ ggplot() +
   
   labs(x = NULL, 
        y = NULL, 
-       title = "Región de La Araucania,\nTasa de Incidencia de Casos Activos por comunas\ny etapa del Plan Paso a Paso", 
+       title = "Región de La Araucanía,\nTasa de Incidencia de Casos Activos por comunas\ny etapa del Plan Paso a Paso", 
        subtitle = as.character(max(producto19$Fecha), format="%d de %B de %Y"), 
        caption = "Fuente: Minsal.cl | gob.cl   ") +
   
