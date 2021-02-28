@@ -10,7 +10,7 @@ require(ggspatial)
 library(ggrepel)
 library(ggpubr)
 
-# paso 1. Cargamos el pol√≠gono con las regiones####
+# paso 1. Cargamos el poligono con las regiones####
 shp <- shapefile('./shp/Regional.shp')
 shp@data$Region <- iconv(shp@data$Region, from = 'UTF-8', to = 'latin1') 
 shp <- shp[shp@data$Region != "Zona sin demarcar" ,  ]
@@ -19,19 +19,16 @@ regiones <- aggregate(shp, 'Region') # agregamos por regiones
 regiones <- st_as_sf(regiones) # lento
 
 # cambiamos los nombres de las regiones para que coincidan con los nombres del archivo .csv
-regiones$Region <- c("Arica y Parinacota",   "Tarapac√°",   "Antofagasta",   "Magallanes",
-                     "Ays√©n",   "Atacama",   "Coquimbo",   "Valpara√≠so",   "Metropolitana",
-                     "Los Lagos",   "Los R√≠os",   "Araucan√≠a",   "Biob√≠o",   "√ëuble",
-                     "Maule",   "O‚ÄôHiggins") # <- cambiar apostrofe de O'Higgins para coincidir con producto4
+regiones$Region <- c("Arica y Parinacota",   "Tarapac·",   "Antofagasta",   "Magallanes",
+                     "AysÈn",   "Atacama",   "Coquimbo",   "ValparaÌso",   "Metropolitana",
+                     "Los Lagos",   "Los RÌos",   "AraucanÌa",   "BiobÌo",   "—uble",
+                     "Maule",   "O'Higgins") # <- cambiar apostrofe de O'Higgins para coincidir con producto4
 
 # Paso 2 - cargamos reporte diario desde Minciencia (ACTUALIZAR FECHA)
-producto4 <- read_csv("https://raw.githubusercontent.com/MinCiencia/Datos-COVID19/master/output/producto4/2021-01-09-CasosConfirmados-totalRegional.csv")
+producto4 <- read_csv("https://raw.githubusercontent.com/MinCiencia/Datos-COVID19/master/output/producto4/2021-02-26-CasosConfirmados-totalRegional.csv")
 producto4 <- as.data.frame(producto4)
 
-names(producto4) <- c("Region", "Casos_totales_acumulados", "Casos_nuevos_totales", "Casos_nuevos_con_sintomas",
-                      "Casos_nuevos_sin_sintomas*", "Casos_nuevos_sin_notificar", "Casos_activos_confirmados",
-                      "Fallecidos_totales", "Casos_confirmados_recuperados", "Casos_probables_acumulados", 
-                      "Casos_activos_probables")
+names(producto4)
 
 # agregamos poblacion regional seg√∫n datos del INE
 producto4$Poblacion <- c("252110", "382773", "691854", "314709", "836096", "1960170", "8125072", "991063",
@@ -41,10 +38,10 @@ names(producto4)
 
 #Procesamos la DF
 Region <- producto4[1:16, c("Region")]
-Fallecidos_totales <- producto4[1:16, c("Fallecidos_totales")]
+Fallecidos_totales <- producto4[1:16, c("Fallecidos totales")]
 Fallecidos_totales <- as.numeric(Fallecidos_totales) 
 
-Casos_activos_confirmados <- producto4[1:16, c("Casos_activos_confirmados")]
+Casos_activos_confirmados <- producto4[1:16, c("Casos activos confirmados")]
 Casos_activos_confirmados <- as.numeric(Casos_activos_confirmados) 
 Poblacion <- producto4[1:16, c("Poblacion")]
 Poblacion <- as.numeric(Poblacion)  
@@ -261,13 +258,13 @@ ggx <- ggarrange(gg1, gg2, gg3 + rremove("x.text"), #lento
                  ncol = 3, nrow = 1)
 
 ggx1 <- annotate_figure(ggx,
-                        top = text_grob("Situaci√≥n por regiones\n08 de enero de 2021", 
+                        top = text_grob("SituaciÛn por regiones\n26 de febrero de 2021", 
                                         color = "black", face = "bold", size = 16),
-                        bottom = text_grob("Fuente: Minsal.cl, Gob.cl", 
+                        bottom = text_grob("Fuente: Minsal.cl | Gob.cl", 
                                            color = "grey",
                                            hjust = 1.03, x = 1, face = "italic", size = 10))
 
 # guardamos como imagen (opcional)
-ggsave(plot = ggx1, filename = './Gr√°ficos/Casos por regiones.png', 
+ggsave(plot = ggx1, filename = './Gr·ficos/Casos por regiones.png', 
        units = 'mm', width = 279, height = 216, dpi = 300)
  
