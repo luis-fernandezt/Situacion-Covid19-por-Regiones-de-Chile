@@ -25,7 +25,7 @@ regiones$Region <- c("Arica y Parinacota",   "Tarapacá",   "Antofagasta",   "Mag
                      "Maule",   "O'Higgins") # <- cambiar apostrofe de O'Higgins para coincidir con producto4
 
 # Paso 2 - cargamos reporte diario desde Minciencia (ACTUALIZAR FECHA)
-producto4 <- read_csv("https://raw.githubusercontent.com/MinCiencia/Datos-COVID19/master/output/producto4/2021-02-26-CasosConfirmados-totalRegional.csv")
+producto4 <- read_csv("https://raw.githubusercontent.com/MinCiencia/Datos-COVID19/master/output/producto4/2021-03-05-CasosConfirmados-totalRegional.csv")
 producto4 <- as.data.frame(producto4)
 
 names(producto4)
@@ -86,58 +86,21 @@ sft_tasa_fallec <- st_as_sf(regiones) %>%
   inner_join(., y = mps_tasa_fallec, by = c('Region' = 'Region'))
 sft_tasa_fallec$tasa_fallec_100mil <- as.numeric(as.character(sft_tasa_fallec$tasa_fallec_100mil))
 
-# paso 4 - quantiles #### 
-# quantiles para Casos_totales
-labels_casos <- c()
-quantiles_casos <- quantile(sft$Casos_activos_confirmados, probs = c(0, 0.2, 0.4, 0.5, 0.6, 0.8, 0.9, 1),
-                            type=6, names = FALSE)
+## #ubicamos el centroide
+sft <- sft %>% mutate(centroid = map(geometry, st_centroid), 
+                      coords = map(centroid, st_coordinates), 
+                      coords_x = map_dbl(coords, 1), 
+                      coords_y = map_dbl(coords, 2))
 
-labels_casos <- c()
-for(idx in 1:length(quantiles_casos)){
-  labels_casos <- c(labels_casos, paste0(round(quantiles_casos[idx], 0), 
-                                         "-", 
-                                         round(quantiles_casos[idx + 1], 0)))}
+sft_tasa100mil <- sft_tasa100mil %>% mutate(centroid = map(geometry, st_centroid), 
+                                            coords = map(centroid, st_coordinates), 
+                                            coords_x = map_dbl(coords, 1), 
+                                            coords_y = map_dbl(coords, 2))
 
-labels_casos <- labels_casos[1:length(labels_casos)-1]
-
-sft$Casos_activos_confirmados_qt <- cut(sft$Casos_activos_confirmados, # guardamos los quantiles  
-                                        breaks = quantiles_casos, 
-                                        labels = labels_casos, 
-                                        include.lowest = T)
-
-# quantiles tasa sft_tasa100mil
-labels_tc <- c()
-quantiles_tc <- quantile(sft_tasa100mil$tasa_activ_100mil, probs = c(0,0.2, 0.4, 0.5, 0.6, 0.8, 0.9, 1), type=6, names = FALSE) # ajuste manual
-
-labels_tc <- c()
-for(idx in 1:length(quantiles_tc)){
-  labels_tc <- c(labels_tc, paste0(round(quantiles_tc[idx], 1), 
-                                   "-", 
-                                   round(quantiles_tc[idx + 1], 1)))}
-
-labels_tc <- labels_tc[1:length(labels_tc)-1]
-
-sft_tasa100mil$tasa_activ_100mil_qt <- cut(sft_tasa100mil$tasa_activ_100mil, # guardamos  
-                                           breaks = quantiles_tc, 
-                                           labels = labels_tc, 
-                                           include.lowest = T)
-
-# quantiles sft_tasa_fallec
-labels_fall <- c()
-quantiles_fall <- quantile(sft_tasa_fallec$tasa_fallec_100mil, probs = c(0, 0.4, 0.5, 0.6, 0.8, 0.9, 1), type=6, names = FALSE) # ajuste manual
-
-labels_fall <- c()
-for(idx in 1:length(quantiles_fall)){
-  labels_fall <- c(labels_fall, paste0(round(quantiles_fall[idx], 1), 
-                                       "-", 
-                                       round(quantiles_fall[idx + 1], 1)))}
-
-labels_fall <- labels_fall[1:length(labels_fall)-1]
-
-sft_tasa_fallec$tasa_fallec_100mil_qt <- cut(sft_tasa_fallec$tasa_fallec_100mil, # guardamos 
-                                             breaks = quantiles_fall, 
-                                             labels = labels_fall, 
-                                             include.lowest = T)
+sft_tasa_fallec <- sft_tasa_fallec %>% mutate(centroid = map(geometry, st_centroid), 
+                                              coords = map(centroid, st_coordinates), 
+                                              coords_x = map_dbl(coords, 1), 
+                                              coords_y = map_dbl(coords, 2))
 
 # limpiamos la BD
 rm(Fallecidos_totales)
@@ -156,79 +119,83 @@ rm(quantiles_casos)
 rm(quantiles_fall)
 rm(quantiles_tc)
 rm(casos)
+rm(Region)
+rm(t)
 
-# paso 5 - ploteamos ####
-
-# Casos_activos_confirmados_qt
-gg1 <- ggplot() +
+# Paso 5 - ploteamos ####
+# Grafico Casos Activos confirmados por region || sft$Casos_activos_confirmados
+g1 <- ggplot() +
   geom_sf(data = sft, color= 'white', size=0.2,
-          aes(fill = Casos_activos_confirmados_qt, colour = Casos_activos_confirmados_qt)) +
+          aes(fill = Casos_activos_confirmados, colour = Casos_activos_confirmados)) +
   
+  scale_fill_gradientn(name = 'Casos activos', 
+                       colours = c('#ffffd4', '#fed98e', '#fe9929', '#d95f0e', '#993404'), 
+                       na.value = 'white') +
+  scale_colour_gradientn(name = '', 
+                         colours = c('#ffffd4', '#fed98e', '#fe9929', '#d95f0e', '#993404'), 
+                         na.value = 'white',
+                         guide = FALSE) + 
+  geom_text(data= sft, aes(x = coords_x, y = coords_y, label = Region), hjust=0.9,
+            color = "black", check_overlap = FALSE, size = 3.3) +
+  geom_text_repel(data=sft, size= 3.5, color= 'black', fontface = 'bold', hjust=-0.5, segment.colour = NA,
+                  aes(coords_x, coords_y, label=format(Casos_activos_confirmados, decimal.mark = ',', sep_mark = '.'))) +
   coord_sf() +
   theme_void() +
-  theme(plot.subtitle = element_text(hjust = 0.5, vjust = 0.9, size = 12, face = "plain"),
+    theme(plot.subtitle = element_text(hjust = 0.5, vjust = 0.9, size = 12, face = "plain"),
         legend.position = c(0.9, 0.5),
         legend.key.size = unit(0.4, "cm"),
         legend.key.width = unit(0.4, "cm")) +
-  
-  annotation_north_arrow(location = "bl", 
-                         which_north = "true", 
-                         pad_x = unit(0.1, "cm"), 
-                         pad_y = unit(0.1, "cm"),
-                         height = unit(1, "cm"), 
-                         width = unit(1, "cm"),
-                         style = north_arrow_fancy_orienteering) +
-  
-  labs(x = NULL, 
-       y = NULL, 
+
+    labs(x = NULL, y = NULL, 
        title = "",
-       subtitle ="Casos Activos Confirmados") +  
-  
-  scale_fill_viridis(option = "magma",
-                     name = "Casos\nActivos",
-                     alpha = 1, #0.8 para publicar
-                     begin = 0,
-                     end = 0.9,
-                     discrete = T,
-                     direction = -1,
-                     guide = guide_legend(title.position = 'top',
-                                          reverse = T)) +
-  xlim(-8300000, -7200000)
+       subtitle ="Casos activos según región") +  
+  xlim(-8700000, -6700000)
 
-# tasa_activ_100mil_qt
-
-gg2 <- ggplot() +
+# Grafico Casos Activos cada 100 mil habitantes || sft_tasa100mil$tasa_activ_100mil
+g2 <- ggplot() +
   geom_sf(data = sft_tasa100mil, color= 'white', size=0.2,
-          aes(fill = tasa_activ_100mil_qt, colour = tasa_activ_100mil_qt)) +
+          aes(fill = tasa_activ_100mil, colour = tasa_activ_100mil)) +
   
+  scale_fill_gradientn(name = 'Casos activos\n cada 100 mil\n habitantes', 
+                       colours = c('#f0f9e8', '#bae4bc', '#7bccc4', '#43a2ca', '#0868ac'), 
+                       na.value = 'white') +
+  scale_colour_gradientn(name = '', 
+                         colours = c('#f0f9e8', '#bae4bc', '#7bccc4', '#43a2ca', '#0868ac'), 
+                         na.value = 'white',
+                         guide = FALSE) +
+  geom_text(data= sft_tasa100mil, aes(x = coords_x, y = coords_y, label = Region), hjust=0.9, #region name
+            color = "black", check_overlap = FALSE, size = 3.3) +
+  geom_text_repel(data=sft_tasa100mil, size= 3.5, color= 'black', fontface = 'bold', hjust=-0.5, segment.colour = NA, #cases count
+                  aes(coords_x, coords_y, label=format(round(tasa_activ_100mil, 1), decimal.mark = ",", sep_mark = "."))) +
   coord_sf() +
   theme_void() +
   theme(plot.subtitle = element_text(hjust = 0.5, vjust = 0.9, size = 12, face = "plain"),
         legend.position = c(0.9, 0.5),
         legend.key.size = unit(0.4, "cm"),
         legend.key.width = unit(0.4, "cm")) +
-  
-  labs(x = NULL, 
-       y = NULL, 
-       title = "",
-       subtitle ="Tasa de incidencia de Casos Activos\ncada 100 mil habitantes") + 
-  
-  scale_fill_viridis(option = "cividis",
-                     name = "Incidenia de\ncasos activos",
-                     alpha = 1, #0.8 para publicar
-                     begin = 0,
-                     end = 0.9,
-                     discrete = T,
-                     direction = -1,
-                     guide = guide_legend(title.position = 'top',
-                                          reverse = T)) +
-  xlim(-8300000, -7200000)
 
-## gg3 - ploteamos tasa_fallec_100mil_qt por region y guardamos
-gg3 <- ggplot() +
+  labs(x = NULL, y = NULL, 
+       title = "",
+       subtitle ="Casos activos cada 100 mil habitantes") +  
+  xlim(-8700000, -6700000)
+
+# Grafico  Tasa fallecidos cada 100 mil habitantes || sft_tasa_fallec$tasa_fallec_100mil
+g3 <- ggplot() +
   geom_sf(data = sft_tasa_fallec, color= 'white', size=0.2,
-          aes(fill = tasa_fallec_100mil_qt, colour = tasa_fallec_100mil_qt)) +
+          aes(fill = tasa_fallec_100mil, colour = tasa_fallec_100mil)) +
   
+  scale_fill_gradientn(name = 'Tasa fallecidos\n cada 100 mil\n habitantes', 
+                       colours = c('#f7f7f7', '#cccccc', '#969696', '#636363', '#252525'), 
+                       na.value = 'white') +
+  scale_colour_gradientn(name = '', 
+                         colours = c('#f7f7f7', '#cccccc', '#969696', '#636363', '#252525'), 
+                         na.value = 'white',
+                         guide = FALSE) +
+  geom_text(data= sft_tasa_fallec, aes(x = coords_x, y = coords_y, label = Region), hjust= 1, 
+            color = "red", check_overlap = FALSE, size = 3.3) +
+  
+  geom_text_repel(data=sft_tasa_fallec, size= 3.5, color= 'red', fontface = 'bold', hjust=-0.5, segment.colour = NA,
+                  aes(coords_x, coords_y, label=format(round(tasa_fallec_100mil, 1), decimal.mark = ",", sep_mark = "."))) +
   coord_sf() +
   theme_void() +
   theme(plot.subtitle = element_text(hjust = 0.5, vjust = 0.9, size = 12, face = "plain"),
@@ -236,29 +203,19 @@ gg3 <- ggplot() +
         legend.key.size = unit(0.4, "cm"),
         legend.key.width = unit(0.4, "cm")) +
   
-  labs(x = NULL, 
-       y = NULL, 
+  labs(x = NULL, y = NULL, 
        title = "",
-       subtitle ="Tasa de fallecidos\ncada 100 mil habitantes") + 
-  
-  scale_fill_viridis(option = "cividis",
-                     name = "Tasa de\nfallecidos",
-                     alpha = 1, #0.8 para publicar
-                     begin = 0,
-                     end = 0.9,
-                     discrete = T,
-                     direction = -1,
-                     guide = guide_legend(title.position = 'top',
-                                          reverse = T)) +
-  xlim(-8300000, -7200000)
+       subtitle ="Tasa de fallecidos cada 100 mil habitantes") +  
+  xlim(-8700000, -6700000)
 
-## grafico combinado
-ggx <- ggarrange(gg1, gg2, gg3 + rremove("x.text"), #lento
+# Grafico combinado
+t <- proc.time()
+ggx <- ggarrange(g1, g2, g3 + rremove("x.text"), #lento
                  #labels = c("A", "B", "C"),
                  ncol = 3, nrow = 1)
 
 ggx1 <- annotate_figure(ggx,
-                        top = text_grob("Situación por regiones\n26 de febrero de 2021", 
+                        top = text_grob("Situación por regiones\n05 de marzo de 2021", 
                                         color = "black", face = "bold", size = 16),
                         bottom = text_grob("Fuente: Minsal.cl | Gob.cl", 
                                            color = "grey",
@@ -267,4 +224,4 @@ ggx1 <- annotate_figure(ggx,
 # guardamos como imagen (opcional)
 ggsave(plot = ggx1, filename = './Gráficos/Casos por regiones.png', 
        units = 'mm', width = 279, height = 216, dpi = 300)
- 
+proc.time() - t
