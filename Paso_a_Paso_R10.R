@@ -167,7 +167,7 @@ gg1 <- ggplot(sdt_comunas, aes(x=Fecha, y=Tasa_cont_100mil, group=Comuna, color=
         plot.subtitle = element_text(hjust = 0.5, size = 14, face = "italic"),
         legend.text = element_text(color = "black", size = 12)) +
   scale_x_date(date_breaks = '7 day', date_labels = "%b %d", limits = c(min(producto19$Fecha), max(producto19$Fecha)+7)) +
-  scale_y_continuous(trans = 'sqrt', breaks = c(1, 5, 10, 20, 50, 100, 150, 200)) +
+  scale_y_continuous(trans = 'sqrt', breaks = c(1, 5, 10, 20, 50, 100, 150, 200, 300, 400, 500, 600)) +
   
   geom_hline(aes(yintercept = 50), color="red", linetype = 'dashed') +
   

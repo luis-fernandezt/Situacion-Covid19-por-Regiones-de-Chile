@@ -18,23 +18,23 @@ shp <- shp[shp@data$Region != "Zona sin demarcar" ,  ]
 regiones <- aggregate(shp, 'Region') # agregamos por regiones
 regiones <- st_as_sf(regiones) # lento
 
+# Paso 2 - cargamos reporte diario desde Minciencia (ACTUALIZAR FECHA)
+producto4 <- read_csv("https://raw.githubusercontent.com/MinCiencia/Datos-COVID19/master/output/producto4/2021-03-12-CasosConfirmados-totalRegional.csv")
+producto4 <- as.data.frame(producto4)
+
 # cambiamos los nombres de las regiones para que coincidan con los nombres del archivo .csv
 regiones$Region <- c("Arica y Parinacota",   "Tarapacá",   "Antofagasta",   "Magallanes",
                      "Aysén",   "Atacama",   "Coquimbo",   "Valparaíso",   "Metropolitana",
                      "Los Lagos",   "Los Ríos",   "Araucanía",   "Biobío",   "Ñuble",
-                     "Maule",   "O'Higgins") # <- cambiar apostrofe de O'Higgins para coincidir con producto4
-
-# Paso 2 - cargamos reporte diario desde Minciencia (ACTUALIZAR FECHA)
-producto4 <- read_csv("https://raw.githubusercontent.com/MinCiencia/Datos-COVID19/master/output/producto4/2021-03-05-CasosConfirmados-totalRegional.csv")
-producto4 <- as.data.frame(producto4)
-
-names(producto4)
+                     "Maule", as.character(producto4[8,1])) # <- cambiar apostrofe de O'Higgins para coincidir con producto4
 
 # agregamos poblacion regional segÃºn datos del INE
 producto4$Poblacion <- c("252110", "382773", "691854", "314709", "836096", "1960170", "8125072", "991063",
                          "1131939", "511551", "1663696", "1014343", "405835", "891440", "107297", "178362",
                          NA, "19458310")
-names(producto4)
+
+
+
 
 #Procesamos la DF
 Region <- producto4[1:16, c("Region")]
@@ -136,8 +136,8 @@ g1 <- ggplot() +
                          na.value = 'white',
                          guide = FALSE) + 
   geom_text(data= sft, aes(x = coords_x, y = coords_y, label = Region), hjust=0.9,
-            color = "black", check_overlap = FALSE, size = 3.3) +
-  geom_text_repel(data=sft, size= 3.5, color= 'black', fontface = 'bold', hjust=-0.5, segment.colour = NA,
+            color = "black", check_overlap = FALSE, size = 3) +
+  geom_text_repel(data=sft, size= 3, color= 'black', fontface = 'bold', hjust=-0.5, segment.colour = NA,
                   aes(coords_x, coords_y, label=format(Casos_activos_confirmados, decimal.mark = ',', sep_mark = '.'))) +
   coord_sf() +
   theme_void() +
@@ -164,8 +164,8 @@ g2 <- ggplot() +
                          na.value = 'white',
                          guide = FALSE) +
   geom_text(data= sft_tasa100mil, aes(x = coords_x, y = coords_y, label = Region), hjust=0.9, #region name
-            color = "black", check_overlap = FALSE, size = 3.3) +
-  geom_text_repel(data=sft_tasa100mil, size= 3.5, color= 'black', fontface = 'bold', hjust=-0.5, segment.colour = NA, #cases count
+            color = "black", check_overlap = FALSE, size = 3) +
+  geom_text_repel(data=sft_tasa100mil, size= 3, color= 'black', fontface = 'bold', hjust=-0.5, segment.colour = NA, #cases count
                   aes(coords_x, coords_y, label=format(round(tasa_activ_100mil, 1), decimal.mark = ",", sep_mark = "."))) +
   coord_sf() +
   theme_void() +
@@ -192,9 +192,9 @@ g3 <- ggplot() +
                          na.value = 'white',
                          guide = FALSE) +
   geom_text(data= sft_tasa_fallec, aes(x = coords_x, y = coords_y, label = Region), hjust= 1, 
-            color = "red", check_overlap = FALSE, size = 3.3) +
+            color = "red", check_overlap = FALSE, size = 3) +
   
-  geom_text_repel(data=sft_tasa_fallec, size= 3.5, color= 'red', fontface = 'bold', hjust=-0.5, segment.colour = NA,
+  geom_text_repel(data=sft_tasa_fallec, size= 3, color= 'red', fontface = 'bold', hjust=-0.5, segment.colour = NA,
                   aes(coords_x, coords_y, label=format(round(tasa_fallec_100mil, 1), decimal.mark = ",", sep_mark = "."))) +
   coord_sf() +
   theme_void() +
@@ -215,8 +215,8 @@ ggx <- ggarrange(g1, g2, g3 + rremove("x.text"), #lento
                  ncol = 3, nrow = 1)
 
 ggx1 <- annotate_figure(ggx,
-                        top = text_grob("Situación por regiones\n05 de marzo de 2021", 
-                                        color = "black", face = "bold", size = 16),
+                        top = text_grob("Situación por regiones\n12 de marzo de 2021", 
+                                        color = "black", face = "bold", size = 14),
                         bottom = text_grob("Fuente: Minsal.cl | Gob.cl", 
                                            color = "grey",
                                            hjust = 1.03, x = 1, face = "italic", size = 10))
