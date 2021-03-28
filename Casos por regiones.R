@@ -19,7 +19,7 @@ regiones <- aggregate(shp, 'Region') # agregamos por regiones
 regiones <- st_as_sf(regiones) # lento
 
 # Paso 2 - cargamos reporte diario desde Minciencia (ACTUALIZAR FECHA)
-producto4 <- read_csv("https://raw.githubusercontent.com/MinCiencia/Datos-COVID19/master/output/producto4/2021-03-12-CasosConfirmados-totalRegional.csv")
+producto4 <- read_csv("https://raw.githubusercontent.com/MinCiencia/Datos-COVID19/master/output/producto4/2021-03-22-CasosConfirmados-totalRegional.csv")
 producto4 <- as.data.frame(producto4)
 
 # cambiamos los nombres de las regiones para que coincidan con los nombres del archivo .csv
@@ -215,7 +215,7 @@ ggx <- ggarrange(g1, g2, g3 + rremove("x.text"), #lento
                  ncol = 3, nrow = 1)
 
 ggx1 <- annotate_figure(ggx,
-                        top = text_grob("Situación por regiones\n12 de marzo de 2021", 
+                        top = text_grob("Situación por regiones\n22 de marzo de 2021", #cambiar fecha manualmente
                                         color = "black", face = "bold", size = 14),
                         bottom = text_grob("Fuente: Minsal.cl | Gob.cl", 
                                            color = "grey",
