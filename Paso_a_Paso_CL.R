@@ -20,7 +20,7 @@ shp@data$Comuna <- iconv(shp@data$Comuna, from = 'UTF-8', to = 'latin1')
 shp_sf <- aggregate(shp, 'Comuna') #agregamos por comuna
 shp_sf <- st_as_sf(shp_sf)
 
-shp_reg <- aggregate(shp, 'Region') #agregamos por region
+shp_reg <- aggregate(shp, 'Region') #agregamos por region (lento)
 shp_reg <- st_as_sf(shp_reg)
 
 shp_sf$Comuna <- c("Marchihue",
@@ -422,8 +422,8 @@ gg <-
   
   geom_sf(data = sft_paso, color= 'white', size=0.001, fill = 'transparent') +
   
-  #geom_text_repel(data=sft_paso, size= 1, color= 'black', fontface = 'bold',  segment.color = NA,
-   #               hjust = 0.5, vjust  = 0.51, aes(coords_x, coords_y, label= Comuna)) +
+  geom_text_repel(data=shp_reg, size= 3.5, color= 'black', fontface = 'bold',  segment.color = NA,
+                  hjust = 0.5, vjust  = 0.51, aes(coords_x, coords_y, label= Region)) +
   
   coord_sf() +
   theme_void() +
