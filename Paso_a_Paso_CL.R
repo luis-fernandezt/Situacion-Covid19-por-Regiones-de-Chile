@@ -16,6 +16,7 @@ shp <- shapefile('./shp/comunas.shp')
 shp@data$Region <- iconv(shp@data$Region, from = 'UTF-8', to = 'latin1')
 shp@data$Provincia <- iconv(shp@data$Provincia, from = 'UTF-8', to = 'latin1')
 shp@data$Comuna <- iconv(shp@data$Comuna, from = 'UTF-8', to = 'latin1')
+#shp <- shp[shp@data$Region != "Zona sin demarcar" ,  ]
 
 shp_sf <- aggregate(shp, 'Comuna') #agregamos por comuna
 shp_sf <- st_as_sf(shp_sf)
@@ -371,6 +372,27 @@ shp_sf$Comuna <- c("Marchihue",
                    "Coihueco")
                    
 
+#cargamos polígono con las Masas Lacustres #### 
+#objetivo: mostrar grandes masas de agua como lagos en el mapa
+shp_masas_lacustres <- shapefile('./shp/Masas_Lacustres/masas_lacustres.shp')
+shp_masas_lacustres@data$Nombre <- iconv(shp_masas_lacustres@data$Nombre, from = 'UTF-8', to = 'latin1')
+shp_masas_lacustres@data$Tipo <- iconv(shp_masas_lacustres@data$Tipo, from = 'UTF-8', to = 'latin1')
+
+#extraemos por tipo masa de agua
+Lago <- subset(shp_masas_lacustres, Tipo=="Lago")
+Glaciar <- subset(shp_masas_lacustres, Tipo=="Glaciar")
+Ventisquero <- subset(shp_masas_lacustres, Tipo=="Ventisquero")
+
+Lago <- aggregate(Lago, "Nombre") #agregamos por nombre de masa de agua
+Lago <- st_as_sf(Lago)
+Glaciar <- aggregate(Glaciar, "Nombre")
+Glaciar <- st_as_sf(Glaciar)
+Ventisquero <- aggregate(Ventisquero, "Nombre")
+Ventisquero <- st_as_sf(Ventisquero)
+
+
+
+
 # paso 3. Importamos plan paso a paso por comunas
 Hoja_1 <- read_csv("Paso/Hoja 1.csv")
 class(Hoja_1)
@@ -420,6 +442,10 @@ gg <-
   geom_sf(data = sft_paso, color= 'transparent', size=0.001, aes(fill = Paso1, colour = Paso1)) +
   scale_fill_manual(values = colors, name= "") +
   
+  geom_sf(data = Lago, color= 'transparent', fill = '#D6F1FF', alpha =0.8) +
+  geom_sf(data = Glaciar, color= 'transparent', fill = '#D6F1FF', alpha =0.8) +
+  geom_sf(data = Ventisquero, color= 'transparent', size=0.5, fill = '#D6F1FF', alpha =0.8) +
+  
   geom_sf(data = sft_paso, color= 'white', size=0.001, fill = 'transparent') +
   
   geom_text_repel(data=shp_reg, size= 3.5, color= 'black', fontface = 'bold',  segment.color = NA,
@@ -450,7 +476,7 @@ gg <-
   xlim(-9000000, -7000000)
 
 
-ggsave(plot = gg, filename = './Gráficos/Paso_a_Paso.pdf', 
+ggsave(plot = gg, filename = './Gráficos/Paso_a_Paso.png', 
        units = 'mm', width = 216, height = 600, dpi = 300)
 
 
