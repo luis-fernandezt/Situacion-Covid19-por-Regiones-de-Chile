@@ -464,7 +464,8 @@ gg <-
   
   labs(x = NULL, 
        y = NULL, 
-       title = "Etapa del Plan Paso a Paso, por Comunas", 
+       title = "Etapa del Plan Paso a Paso, por Comunas",
+       subtitle = as.character(max(producto19$Fecha), format="%d de %B de %Y"), #Comentar si arroja error
        caption = "Fuente: Minsal.cl | gob.cl") +
   
   annotation_north_arrow(location = "tr", 
