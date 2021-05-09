@@ -215,7 +215,7 @@ ggplot() +
   theme_void() +
   theme(plot.title = element_text(hjust = 0.5, size = 16, face = "bold"),
         plot.subtitle = element_text(hjust = 0.5, size = 14, face = "italic"),
-        legend.position = c(0.5, 0.05), #"none" #c(0.5, 0.97) 
+        legend.position = c(0.5, 0.04), #"none" #c(0.5, 0.97) 
         legend.direction = "horizontal",
         legend.key.size = unit(0.5, "cm"), #alto leyenda
         legend.key.width = unit(0.5, "cm"), #ancho leyenda 
@@ -234,7 +234,7 @@ ggplot() +
                          pad_y = unit(0.1, "cm"),
                          style = north_arrow_fancy_orienteering) +
   
-  ylim(-5450000, -4900000) +
+  ylim(-5470000, -4920000) +
   xlim(-8350000, -7950000)
 
 #gg2
