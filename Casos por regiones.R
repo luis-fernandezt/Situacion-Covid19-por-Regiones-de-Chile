@@ -1,3 +1,4 @@
+t <- proc.time()
 # Script guardado y codificado en Latin1 para evitar pÃ©rdida de caracteres
 # cargamos librerias
 require(raster)
@@ -19,7 +20,7 @@ regiones <- aggregate(shp, 'Region') # agregamos por regiones
 regiones <- st_as_sf(regiones) # lento
 
 # Paso 2 - cargamos reporte diario desde Minciencia (ACTUALIZAR FECHA)
-producto4 <- read_csv("https://raw.githubusercontent.com/MinCiencia/Datos-COVID19/master/output/producto4/2021-05-21-CasosConfirmados-totalRegional.csv")
+producto4 <- read_csv("https://raw.githubusercontent.com/MinCiencia/Datos-COVID19/master/output/producto4/2021-06-04-CasosConfirmados-totalRegional.csv")
 producto4 <- as.data.frame(producto4)
 
 # cambiamos los nombres de las regiones para que coincidan con los nombres del archivo .csv
@@ -209,13 +210,12 @@ g3 <- ggplot() +
   xlim(-8700000, -6700000)
 
 # Grafico combinado
-t <- proc.time()
 ggx <- ggarrange(g1, g2, g3 + rremove("x.text"), #lento
                  #labels = c("A", "B", "C"),
                  ncol = 3, nrow = 1)
 
 ggx1 <- annotate_figure(ggx,
-                        top = text_grob("Situación por regiones\n21 de mayo de 2021", #cambiar fecha manualmente
+                        top = text_grob("Situación por regiones\n04 de junio de 2021", #cambiar fecha manualmente
                                         color = "black", face = "bold", size = 14),
                         bottom = text_grob("Fuente: Minsal.cl | Gob.cl", 
                                            color = "grey",
