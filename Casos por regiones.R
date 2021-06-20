@@ -1,4 +1,4 @@
-t <- proc.time()
+
 # Script guardado y codificado en Latin1 para evitar pÃ©rdida de caracteres
 # cargamos librerias
 require(raster)
@@ -11,6 +11,7 @@ require(ggspatial)
 library(ggrepel)
 library(ggpubr)
 
+t <- proc.time()
 # paso 1. Cargamos el poligono con las regiones####
 shp <- shapefile('./shp/Regional.shp')
 shp@data$Region <- iconv(shp@data$Region, from = 'UTF-8', to = 'latin1') 
@@ -20,7 +21,7 @@ regiones <- aggregate(shp, 'Region') # agregamos por regiones
 regiones <- st_as_sf(regiones) # lento
 
 # Paso 2 - cargamos reporte diario desde Minciencia (ACTUALIZAR FECHA)
-producto4 <- read_csv("https://raw.githubusercontent.com/MinCiencia/Datos-COVID19/master/output/producto4/2021-06-11-CasosConfirmados-totalRegional.csv")
+producto4 <- read_csv("https://raw.githubusercontent.com/MinCiencia/Datos-COVID19/master/output/producto4/2021-06-18-CasosConfirmados-totalRegional.csv")
 producto4 <- as.data.frame(producto4)
 
 # cambiamos los nombres de las regiones para que coincidan con los nombres del archivo .csv
@@ -215,7 +216,7 @@ ggx <- ggarrange(g1, g2, g3 + rremove("x.text"), #lento
                  ncol = 3, nrow = 1)
 
 ggx1 <- annotate_figure(ggx,
-                        top = text_grob("Situación por regiones\n11 de junio de 2021", #cambiar fecha manualmente
+                        top = text_grob("Situación por regiones\n18 de junio de 2021", #cambiar fecha manualmente
                                         color = "black", face = "bold", size = 14),
                         bottom = text_grob("Fuente: Minsal.cl | Gob.cl", 
                                            color = "grey",
