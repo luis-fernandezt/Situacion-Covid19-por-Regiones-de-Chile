@@ -479,5 +479,3 @@ gg <-
 
 ggsave(plot = gg, filename = './Gráficos/Paso_a_Paso.png', 
        units = 'mm', width = 216, height = 600, dpi = 300)
-
-
