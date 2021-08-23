@@ -407,7 +407,7 @@ Paso1[Hoja_1$Paso == 5] <- 5
 
 Hoja_1$Paso1 <- as.factor(Paso1)
 levels(Hoja_1$Paso1)
-levels(Hoja_1$Paso1) <- c("Cuarentena", "Transición", "Preparación", "Apertura Inicial")
+levels(Hoja_1$Paso1) <- c( "Transición", "Preparación", "Apertura Inicial")
 names(Hoja_1)
 
 mps_paso <- Hoja_1 %>% 

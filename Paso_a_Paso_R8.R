@@ -1,5 +1,3 @@
-# Script guardado y codificado en Latin1 para evitar pérdida de caracteres
-# paso 1.cargamos librerias ####
 require(raster)
 require(tidyverse)
 require(sf)
@@ -11,43 +9,36 @@ library(ggrepel)
 library(viridis) 
 library(ggpubr)
 
-# paso 2. cargamos poligonos de La Región de Los Lagos ####
-# polígonos dispnibles en: https://www.bcn.cl/siit/mapas_vectoriales
-
+#shp file
 shp <- shapefile('./shp/comunas.shp')
 shp@data$Region <- iconv(shp@data$Region, from = 'UTF-8', to = 'latin1')
 shp@data$Provincia <- iconv(shp@data$Provincia, from = 'UTF-8', to = 'latin1')
 shp@data$Comuna <- iconv(shp@data$Comuna, from = 'UTF-8', to = 'latin1')
 
-r10 <- shp[shp@data$Region=="Región de Los Lagos" ,  ]
+r8 <- shp[shp@data$Region=="Región del Bío-Bío" ,  ]
 
-comunas_sf <- aggregate(r10, 'Comuna') #agregamos region por comuna
+comunas_sf <- aggregate(r8, 'Comuna') #agregamos region por comuna
 comunas_sf <- st_as_sf(comunas_sf)
 comunas_paso <- st_as_sf(comunas_sf)
 
-# guardar poligono borde regional como .shp
-#r10_sf <- aggregate(r10, 'Region') #agregamos por region
-#r10_sf <- st_as_sf(r10_sf)
-#plot(r10_sf)
-# st_write(r10_sf, dsn = 'shp', layer = 'shp_r10', driver = 'ESRI Shapefile')
+comunas_sf$Comuna <- c(  "Canete", "Contulmo",   "Curanilahue",  "Lebu",  "Los Alamos",  "Laja",  "Los Angeles",
+                         "Mulchen",  "Nacimiento",  "Negrete",  "Quilaco",  "Quilleco",   "San Rosendo",  "Tucapel",
+                         "Chiguayante",  "Concepcion",  "Coronel",  "Florida",  "Hualqui",  "Lota",  "San Pedro de la Paz",
+                         "Santa Juana",  "Yumbel" ,  "Cabrero",  "Antuco" ,  "Alto Biobio",  "Tirua",  "Hualpen",  "Talcahuano",
+                         "Penco", "Tome",  "Arauco",  "Santa Barbara")
 
-comunas_sf$Comuna <- c("San Pablo", "Puqueldon", "Fresia", "Llanquihue", "Osorno", "Purranque", "Puyehue", "Cochamo", "Ancud",
-             "Quellon", "Queilen", "Chonchi", "Puerto Montt", "Rio Negro", "Castro", "Dalcahue", "Quemchi", 
-             "San Juan de la Costa", "Calbuco", "Chaiten", "Los Muermos", "Maullin", "Quinchao", "Curaco de Velez",
-             "Puerto Octay", "Frutillar", "Puerto Varas", "Hualaihue", "Palena", "Futaleufu")
 
-comunas_paso$Comuna <- c("San Pablo", "Puqueldón", "Fresia", "Llanquihue", "Osorno", "Purranque", "Puyehue", "Cochamó", "Ancud",
-                       "Quellón", "Queilén", "Chonchi", "Puerto Montt", "Río Negro", "Castro", "Dalcahue", "Quemchi", 
-                       "San Juan de la Costa", "Calbuco", "Chaitén", "Los Muermos", "Maullín", "Quinchao", "Curaco de Vélez",
-                       "Puerto Octay", "Frutillar", "Puerto Varas", "Hualaihué", "Palena", "Futaleufú")
+comunas_paso$Comuna <- c("Cañete", "Contulmo",   "Curanilahue",  "Lebu",  "Los Álamos",  "Laja",  "Los Ángeles",
+                         "Mulchén",  "Nacimiento",  "Negrete",  "Quilaco",  "Quilleco",   "San Rosendo",  "Tucapel",
+                         "Chiguayante",  "Concepción",  "Coronel",  "Florida",  "Hualqui",  "Lota",  "San Pedro de la Paz",
+                         "Santa Juana",  "Yumbel" ,  "Cabrero",  "Antuco" ,  "Alto Biobío",  "Tirúa",  "Hualpén",  "Talcahuano",
+                         "Penco", "Tomé",  "Arauco",  "Santa Bárbara")
 
-# paso 3. cargamos polígono con las Masas Lacustres #### 
-#objetivo: mostrar grandes masas de agua como lagos en el mapa
+# Masas Lacustres
 shp_masas_lacustres <- shapefile('./shp/Masas_Lacustres/masas_lacustres.shp')
 shp_masas_lacustres@data$Nombre <- iconv(shp_masas_lacustres@data$Nombre, from = 'UTF-8', to = 'latin1')
 shp_masas_lacustres@data$Tipo <- iconv(shp_masas_lacustres@data$Tipo, from = 'UTF-8', to = 'latin1')
 
-#extraemos por tipo masa de agua
 Lago <- subset(shp_masas_lacustres, Tipo=="Lago")
 Glaciar <- subset(shp_masas_lacustres, Tipo=="Glaciar")
 Ventisquero <- subset(shp_masas_lacustres, Tipo=="Ventisquero")
@@ -59,56 +50,43 @@ Glaciar <- st_as_sf(Glaciar)
 Ventisquero <- aggregate(Ventisquero, "Nombre")
 Ventisquero <- st_as_sf(Ventisquero)
 
-# paso 3. cargamos archivo *.csv "producto 19" agregada por comunas desde repositorio MinCiencia ####
+
+#ETL DF
 producto19 <- read_csv("https://raw.githubusercontent.com/MinCiencia/Datos-COVID19/master/output/producto19/CasosActivosPorComuna_std.csv")
 producto19 <- as.data.frame(producto19)
 names(producto19) <- c("Region", "Codigo_region", "Comuna", "Codigo_comuna", "Poblacion", "Fecha", "Casos_activos")
 max(producto19$Fecha) #verificar que es el ultimo reporte
 
-# agregamos columna con tasa de incidencia de casos activos:
-# (casos activos comuna / poblacion comunal) x 100.000
 producto19$Tasa_cont_100mil <- (producto19$Casos_activos/producto19$Poblacion)*100000
 names(producto19)
 
-# Importamos plan paso a paso por comunas
-# Hoja_1 <- read_excel("Paso/Hoja 1.xlsx")
 Hoja_1 <- read_csv("Paso/Hoja 1.csv")
 class(Hoja_1)
 Hoja_1 <- data.frame(Hoja_1)
 
-# Recodificamos Paso según
-# "1"="Cuarentena",
-# "2"="Transición", 
-# "3"="Preparación",
-# "4"="Apertura Inicial",
-# "5"="Apertura avanzada")
-
 names(Hoja_1)
 Paso1 <- vector()
-
 Paso1[Hoja_1$Paso == 1] <- 1
 Paso1[Hoja_1$Paso == 2] <- 2
 Paso1[Hoja_1$Paso == 3] <- 3
 Paso1[Hoja_1$Paso == 4] <- 4
 Paso1[Hoja_1$Paso == 5] <- 5
-
 Hoja_1$Paso1 <- as.factor(Paso1)
-levels(Hoja_1$Paso1) #Revizar en caso de avance de fases
-levels(Hoja_1$Paso1) <- c("Transición", "Preparación", "Apertura Inicial")
+levels(Hoja_1$Paso1)
+levels(Hoja_1$Paso1) <- c("Cuarentena", "Transición", "Preparación", "Apertura Inicial")
 names(Hoja_1)
- 
-#paso4. preparacion de la base de datos ####
 
-# creamos df para serie de tiempo grandes comunas de la macro zona sur
-Temuco <- producto19 %>%  filter(Codigo_comuna %in% c("09101"))
-Valdivia <- producto19 %>%  filter(Codigo_comuna %in% c("14101"))
-Osorno <- producto19 %>%  filter(Codigo_comuna %in% c("10301"))
-PuertoMontt <- producto19 %>%  filter(Codigo_comuna %in% c("10101"))
-sdt_comunas <- rbind(Temuco, Valdivia, Osorno,  PuertoMontt)
 
-# para mapas
+LosAngeles <- producto19 %>%  filter(Codigo_comuna %in% c("08301"))
+Concepcion <- producto19 %>%  filter(Codigo_comuna %in% c("08101"))
+Arauco <- producto19 %>%  filter(Codigo_comuna %in% c("08202"))
+Talcahuano <- producto19 %>%  filter(Codigo_comuna %in% c("08110"))
+
+sdt_comunas <- rbind(LosAngeles, Concepcion, Arauco, Talcahuano)
+
+
 # filtramos por region y ultima fecha reportada
-tbl <- producto19 %>%  filter(Codigo_region == 10)
+tbl <- producto19 %>%  filter(Codigo_region == "08")
 tbl <- tbl %>% filter(Fecha == max(Fecha)) 
 max(tbl$Fecha)
 
@@ -147,13 +125,13 @@ sft_casos <- sft_casos %>% mutate(centroid = map(geometry, st_centroid),
                                   coords_y = map_dbl(coords, 2))
 
 sft_tasa <- sft_tasa %>% mutate(centroid = map(geometry, st_centroid), 
-                                  coords = map(centroid, st_coordinates), 
-                                  coords_x = map_dbl(coords, 1), 
-                                  coords_y = map_dbl(coords, 2))
+                                coords = map(centroid, st_coordinates), 
+                                coords_x = map_dbl(coords, 1), 
+                                coords_y = map_dbl(coords, 2))
 
-#paso 5 -  ploteamos ####
 
-#Grafico 1. sdt casos activos grandes comunas macro zona sur
+#Grafico 1. sdt casos activos Ñuble
+
 gg1 <- ggplot(sdt_comunas, aes(x=Fecha, y=Tasa_cont_100mil, group=Comuna, color=Comuna)) +
   geom_line(size = 1.3, data = sdt_comunas) +
   geom_point(size = 1.7, data = sdt_comunas) +
@@ -174,14 +152,13 @@ gg1 <- ggplot(sdt_comunas, aes(x=Fecha, y=Tasa_cont_100mil, group=Comuna, color=
   theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
   labs(x = "Fecha", 
        y = "Tasa de incidencia de casos activos", 
-       title = "Tasa de incidencia Casos Activos\nTemuco, Valdivia, Osorno y Puerto Montt", 
+       title = "Tasa de incidencia Casos Activos\nChillán, Bulnes, Quirihue y San Carlos", 
        subtitle = as.character(max(producto19$Fecha), format="%d de %B de %Y"), 
        caption = "Fuente: Minsal.cl | Gob.cl")
 
-#gg1
-
-ggsave(plot = gg1, filename = './Gráficos/SDT_R10.pdf', 
+ggsave(plot = gg1, filename = './Gráficos/SDT_Biobio.pdf', 
        units = 'mm', width = 216, height = 279, dpi = 300)
+
 
 # Situación Comunal con Casos Activos de covid-19 y etapa del Plan Paso a Paso ####
 
@@ -192,20 +169,20 @@ colors <- c("Cuarentena" = "#f75c5c",
             "Apertura avanzada" = "#a7d1f2")
 
 gg2 <- 
-ggplot() +
+  ggplot() +
   geom_sf(data = sft_paso, color= 'transparent', size=0.5, aes(fill = Paso1, colour = Paso1)) +
   scale_fill_manual(values = colors, name= "") +
-
+  
   geom_sf(data = Lago, color= 'transparent', fill = '#D6F1FF', alpha =0.8) +
   geom_sf(data = Glaciar, color= 'transparent', fill = '#D6F1FF', alpha =0.8) +
   geom_sf(data = Ventisquero, color= 'transparent', size=0.5, fill = '#D6F1FF', alpha =0.8) +
   
   geom_sf(data = comunas_sf, color= 'white', size=0.5, fill = 'transparent') +
   
-  geom_text_repel(data=sft_tasa, size= 3, color= 'black', fontface = 'bold',  segment.color = NA,
+  geom_text_repel(data=sft_tasa, size= 4, color= 'black', fontface = 'bold',  segment.color = NA,
                   hjust = 0.5, vjust  = 0.51, aes(coords_x, coords_y, label= Comuna)) +
   
-  geom_label_repel(data=sft_tasa, size= 3, color= 'white', fontface = 'bold', fill = 'red', segment.color = NA,
+  geom_label_repel(data=sft_tasa, size= 4, color= 'white', fontface = 'bold', fill = 'red', segment.color = NA,
                    hjust = 0.5, vjust  = 0.49, aes(coords_x, 
                                                    coords_y, 
                                                    label=format(round(Tasa_cont_100mil, 1), 
@@ -215,7 +192,7 @@ ggplot() +
   theme_void() +
   theme(plot.title = element_text(hjust = 0.5, size = 16, face = "bold"),
         plot.subtitle = element_text(hjust = 0.5, size = 14, face = "italic"),
-        legend.position = c(0.5, 0.04), #"none" #c(0.5, 0.97) 
+        legend.position = c(0.5, 0.05), #"none" #c(0.5, 0.97) 
         legend.direction = "horizontal",
         legend.key.size = unit(0.5, "cm"), #alto leyenda
         legend.key.width = unit(0.5, "cm"), #ancho leyenda 
@@ -224,7 +201,7 @@ ggplot() +
   
   labs(x = NULL, 
        y = NULL, 
-       title = "Región de Los Lagos,\nTasa de Incidencia de Casos Activos por comunas\ny etapa del Plan Paso a Paso", 
+       title = "Región del Biobío,\nTasa de Incidencia de Casos Activos por comunas\ny etapa del Plan Paso a Paso", 
        subtitle = as.character(max(producto19$Fecha), format="%d de %B de %Y"), 
        caption = "Fuente: Minsal.cl | gob.cl   ") +
   
@@ -233,11 +210,9 @@ ggplot() +
                          pad_x = unit(0.1, "cm"), 
                          pad_y = unit(0.1, "cm"),
                          style = north_arrow_fancy_orienteering) +
-  
-  ylim(-5470000, -4920000) +
-  xlim(-8350000, -7950000)
 
-#gg2
+  ylim(-4650000, -4370000) +
+  xlim(-8199000, -7910000)
 
-ggsave(plot = gg2, filename = './Gráficos/Map_R10.pdf', 
-      units = 'mm', width = 216, height = 279, dpi = 300)
+ggsave(plot = gg2, filename = './Gráficos/Activos_Biobío.pdf', 
+       units = 'mm', width = 216, height = 279, dpi = 300)
