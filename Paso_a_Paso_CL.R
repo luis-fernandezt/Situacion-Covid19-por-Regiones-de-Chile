@@ -407,7 +407,7 @@ Paso1[Hoja_1$Paso == 5] <- 5
 
 Hoja_1$Paso1 <- as.factor(Paso1)
 levels(Hoja_1$Paso1)
-levels(Hoja_1$Paso1) <- c( "Transición", "Preparación", "Apertura Inicial")
+levels(Hoja_1$Paso1) <- c( "Transición", "Preparación", "Apertura Inicial", "Apertura Avanzada")
 names(Hoja_1)
 
 mps_paso <- Hoja_1 %>% 
@@ -431,11 +431,11 @@ shp_reg <- shp_reg %>% mutate(centroid = map(geometry, st_centroid),
 
 
 #4. Ploteamos
-colors <- c("Cuarentena" = "#f75c5c", 
+colors <- c(#"Cuarentena" = "#f75c5c", 
             "Transición" = "#ffbf00", 
             "Preparación" = "#fff200",
             "Apertura Inicial" = "#3389d0",
-            "Apertura avanzada" = "#a7d1f2")
+            "Apertura Avanzada" = "#a7d1f2")
 
 gg <- 
   ggplot() +
@@ -465,7 +465,7 @@ gg <-
   labs(x = NULL, 
        y = NULL, 
        title = "Etapa del Plan Paso a Paso, por Comunas",
-       subtitle = as.character(max(producto19$Fecha), format="%d de %B de %Y"), #Comentar si arroja error
+       subtitle = as.character(max(producto19$Fecha), format="%B %d, %Y"), #Comentar si arroja error
        caption = "Fuente: Minsal.cl | gob.cl") +
   
   annotation_north_arrow(location = "tr", 

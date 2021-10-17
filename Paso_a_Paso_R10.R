@@ -94,7 +94,7 @@ Paso1[Hoja_1$Paso == 5] <- 5
 
 Hoja_1$Paso1 <- as.factor(Paso1)
 levels(Hoja_1$Paso1) #Revizar en caso de avance de fases
-levels(Hoja_1$Paso1) <- c("Transición", "Preparación", "Apertura Inicial")
+levels(Hoja_1$Paso1) <- c("Transición", "Preparación", "Apertura Inicial", "Apertura Avanzada")
 names(Hoja_1)
  
 #paso4. preparacion de la base de datos ####
@@ -166,7 +166,7 @@ gg1 <- ggplot(sdt_comunas, aes(x=Fecha, y=Tasa_cont_100mil, group=Comuna, color=
         plot.title = element_text(hjust = 0.5, size = 16, face = "bold"),
         plot.subtitle = element_text(hjust = 0.5, size = 14, face = "italic"),
         legend.text = element_text(color = "black", size = 12)) +
-  scale_x_date(date_breaks = '7 day', date_labels = "%b %d", limits = c(min(producto19$Fecha), max(producto19$Fecha)+7)) +
+  scale_x_date(date_breaks = '15 day', date_labels = "%b %d", limits = c(min(producto19$Fecha), max(producto19$Fecha)+7)) +
   scale_y_continuous(trans = 'sqrt', breaks = c(1, 5, 10, 20, 50, 100, 150, 200, 300, 400, 500, 600)) +
   
   geom_hline(aes(yintercept = 50), color="red", linetype = 'dashed') +
@@ -175,7 +175,7 @@ gg1 <- ggplot(sdt_comunas, aes(x=Fecha, y=Tasa_cont_100mil, group=Comuna, color=
   labs(x = "Fecha", 
        y = "Tasa de incidencia de casos activos", 
        title = "Tasa de incidencia Casos Activos\nTemuco, Valdivia, Osorno y Puerto Montt", 
-       subtitle = as.character(max(producto19$Fecha), format="%d de %B de %Y"), 
+       subtitle = as.character(max(producto19$Fecha), format="%B %d, %Y"), 
        caption = "Fuente: Minsal.cl | Gob.cl")
 
 #gg1
@@ -185,11 +185,11 @@ ggsave(plot = gg1, filename = './Gráficos/SDT_R10.pdf',
 
 # Situación Comunal con Casos Activos de covid-19 y etapa del Plan Paso a Paso ####
 
-colors <- c("Cuarentena" = "#f75c5c", 
-            "Transición" = "#ffbf00", 
+colors <- c(#"Cuarentena" = "#f75c5c", 
+            #"Transición" = "#ffbf00", 
             "Preparación" = "#fff200",
             "Apertura Inicial" = "#3389d0",
-            "Apertura avanzada" = "#a7d1f2")
+            "Apertura Avanzada" = "#a7d1f2")
 
 gg2 <- 
 ggplot() +
@@ -225,7 +225,7 @@ ggplot() +
   labs(x = NULL, 
        y = NULL, 
        title = "Región de Los Lagos,\nTasa de Incidencia de Casos Activos por comunas\ny etapa del Plan Paso a Paso", 
-       subtitle = as.character(max(producto19$Fecha), format="%d de %B de %Y"), 
+       subtitle = as.character(max(producto19$Fecha), format="%B %d, %Y"), 
        caption = "Fuente: Minsal.cl | gob.cl   ") +
   
   annotation_north_arrow(location = "tr", 

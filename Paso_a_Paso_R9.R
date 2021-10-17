@@ -98,7 +98,7 @@ Paso1[Hoja_1$Paso == 5] <- 5
 
 Hoja_1$Paso1 <- as.factor(Paso1)
 levels(Hoja_1$Paso1)
-levels(Hoja_1$Paso1) <- c("Cuarentena", "Transición", "Preparación", "Apertura Inicial")
+levels(Hoja_1$Paso1) <- c("Transición", "Preparación", "Apertura Inicial", "Apertura Avanzada")
 names(Hoja_1)
  
 #paso4. preparacion de la base de datos ####
@@ -151,11 +151,11 @@ sft_tasa <- sft_tasa %>% mutate(centroid = map(geometry, st_centroid),
 #paso 5 -  ploteamos ####
 # Situación Comunal con Casos Activos de covid-19 y etapa del Plan Paso a Paso ####
 
-colors <- c("Cuarentena" = "#f75c5c", 
-            "Transición" = "#ffbf00", 
-            "Preparación" = "#fff200",
-            "Apertura Inicial" = "#3389d0",
-            "Apertura avanzada" = "#a7d1f2")
+colors <- c(#"Cuarentena" = "#f75c5c", 
+  #"Transición" = "#ffbf00", 
+  "Preparación" = "#fff200",
+  "Apertura Inicial" = "#3389d0",
+  "Apertura avanzada" = "#a7d1f2")
 
 gg2 <- 
 ggplot() +
@@ -191,7 +191,7 @@ ggplot() +
   labs(x = NULL, 
        y = NULL, 
        title = "Región de La Araucanía,\nTasa de Incidencia de Casos Activos por comunas\ny etapa del Plan Paso a Paso", 
-       subtitle = as.character(max(producto19$Fecha), format="%d de %B de %Y"), 
+       subtitle = as.character(max(producto19$Fecha), format="%B %d, %Y"), 
        caption = "Fuente: Minsal.cl | gob.cl   ") +
   
   annotation_north_arrow(location = "tr", 
