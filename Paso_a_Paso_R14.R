@@ -84,7 +84,7 @@ Paso1[Hoja_1$Paso == 5] <- 5
 
 Hoja_1$Paso1 <- as.factor(Paso1)
 levels(Hoja_1$Paso1) #Revizar en caso de avance de fases
-levels(Hoja_1$Paso1) <- c("Transición", "Preparación", "Apertura Inicial", "Apertura Avanzada")
+levels(Hoja_1$Paso1) <- c("Transición", "Preparación", "Apertura Inicial")
 names(Hoja_1)
 
 # para mapas
@@ -136,10 +136,10 @@ sft_tasa <- sft_tasa %>% mutate(centroid = map(geometry, st_centroid),
 # Situación Comunal con Casos Activos de covid-19 y etapa del Plan Paso a Paso ####
 
 colors <- c(#"Cuarentena" = "#f75c5c", 
-            #"Transición" = "#ffbf00", 
+            "Transición" = "#ffbf00", 
             "Preparación" = "#fff200",
-            "Apertura Inicial" = "#3389d0",
-            "Apertura avanzada" = "#a7d1f2")
+            "Apertura Inicial" = "#3389d0")
+           # "Apertura avanzada" = "#a7d1f2")
 
 gg3 <- 
 ggplot() +

@@ -94,7 +94,7 @@ Paso1[Hoja_1$Paso == 5] <- 5
 
 Hoja_1$Paso1 <- as.factor(Paso1)
 levels(Hoja_1$Paso1) #Revizar en caso de avance de fases
-levels(Hoja_1$Paso1) <- c("Transición", "Preparación", "Apertura Inicial", "Apertura Avanzada")
+levels(Hoja_1$Paso1) <- c("Transición", "Preparación", "Apertura Inicial")
 names(Hoja_1)
  
 #paso4. preparacion de la base de datos ####
@@ -104,7 +104,10 @@ Temuco <- producto19 %>%  filter(Codigo_comuna %in% c("09101"))
 Valdivia <- producto19 %>%  filter(Codigo_comuna %in% c("14101"))
 Osorno <- producto19 %>%  filter(Codigo_comuna %in% c("10301"))
 PuertoMontt <- producto19 %>%  filter(Codigo_comuna %in% c("10101"))
-sdt_comunas <- rbind(Temuco, Valdivia, Osorno,  PuertoMontt)
+Castro <- producto19 %>%  filter(Codigo_comuna %in% c("10201"))
+
+
+sdt_comunas <- rbind(Valdivia, Osorno, PuertoMontt, Castro)
 
 # para mapas
 # filtramos por region y ultima fecha reportada
@@ -174,7 +177,7 @@ gg1 <- ggplot(sdt_comunas, aes(x=Fecha, y=Tasa_cont_100mil, group=Comuna, color=
   theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
   labs(x = "Fecha", 
        y = "Tasa de incidencia de casos activos", 
-       title = "Tasa de incidencia Casos Activos\nTemuco, Valdivia, Osorno y Puerto Montt", 
+       title = "Tasa de incidencia Casos Activos\nValdivia, Osorno, Puerto Montt y Castro", 
        subtitle = as.character(max(producto19$Fecha), format="%B %d, %Y"), 
        caption = "Fuente: Minsal.cl | Gob.cl")
 
@@ -186,10 +189,10 @@ ggsave(plot = gg1, filename = './Gráficos/SDT_R10.pdf',
 # Situación Comunal con Casos Activos de covid-19 y etapa del Plan Paso a Paso ####
 
 colors <- c(#"Cuarentena" = "#f75c5c", 
-            #"Transición" = "#ffbf00", 
+            "Transición" = "#ffbf00", 
             "Preparación" = "#fff200",
-            "Apertura Inicial" = "#3389d0",
-            "Apertura Avanzada" = "#a7d1f2")
+            "Apertura Inicial" = "#3389d0")
+            #"Apertura Avanzada" = "#a7d1f2")
 
 gg2 <- 
 ggplot() +
@@ -241,3 +244,4 @@ ggplot() +
 
 ggsave(plot = gg2, filename = './Gráficos/Map_R10.pdf', 
       units = 'mm', width = 216, height = 279, dpi = 300)
+
